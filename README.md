@@ -24,20 +24,11 @@ Other features:
 
 For players, you can download and install this addon from:
 
- * Curse: http://www.curse.com/addons/wow/fixgroups
- * WoWInterface: http://www.wowinterface.com/downloads/info23671-FixGroups.html
+ * Curse: http://www.curse.com/addons/wow/fixgroupsnew
 
 For developers, beta testers, and translators (anyone is welcome to contribute):
 
- * Main project site: http://wow.curseforge.com/addons/fixgroups/
- * GitHub mirror: https://github.com/bencvt/FixGroups
+ * GitHub : https://github.com/shanebionic/FixGroupsNew
 
 ## Thanks yous
 
-Many thanks to the following translators for their help on this addon:
-
- * German: @pas06
- * Russian: @mednik
- * Chinese: @cadcamzy
- * Korean: @kisswow
- * http://wow.curseforge.com/addons/fixgroups/localization/translators/
