@@ -1,4 +1,4 @@
-# FixGroups-Reborn by denalb
+# FixRaid by denalb
 
 Organizing groups is an important, if sometimes tedious, part of running a raid. This addon helps automate the process.
 
@@ -24,11 +24,9 @@ Other features:
 
 For players, you can download and install this addon from:
 
- * Curse: http://www.curse.com/addons/wow/fixgroupsnew
+ * Curse: http://www.curse.com/addons/wow/fixraid
 
 For developers, beta testers, and translators (anyone is welcome to contribute):
 
- * GitHub : https://github.com/shanebionic/FixGroupsNew
-
-## Thanks yous
+ * GitHub : https://github.com/shanebionic/FixRaid
 
