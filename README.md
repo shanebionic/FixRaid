@@ -1,4 +1,4 @@
-# FixGroups by bencvt
+# FixGroups-Reborn by denalb
 
 Organizing groups is an important, if sometimes tedious, part of running a raid. This addon helps automate the process.
 
