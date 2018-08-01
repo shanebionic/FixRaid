@@ -24,7 +24,7 @@ M.CLASS_DAMAGER_ROLE = {
   ROGUE       = "melee",
   MAGE        = "ranged",
   WARLOCK     = "ranged",
-  HUNTER      = "ranged", -- comment out for WoW 7.0 (Legion)
+  -- HUNTER      = "ranged", -- comment out for WoW 7.0 (Legion)
   DEMONHUNTER = "melee",
 }
 -- We have to include tanks and healers to handle people who clear their role.
@@ -37,9 +37,9 @@ local SPECID_ROLE = {
   [104] = "tank",    -- Guardian Druid
   [105] = "healer",  -- Restoration Druid
   -- Uncomment Hunter specs for WoW 7.0 (Legion):
-  --[253] = "ranged",  -- Beast Mastery Hunter
-  --[254] = "ranged",  -- Marksmanship Hunter
-  --[255] = "melee",   -- Survival Hunter
+  [253] = "ranged",  -- Beast Mastery Hunter
+  [254] = "ranged",  -- Marksmanship Hunter
+  [255] = "melee",   -- Survival Hunter
 }
 -- Lazily populated.
 local BUFF_ROLE = false
@@ -160,12 +160,10 @@ local function guessMeleeOrRangedFromBuffs(name)
   if not BUFF_ROLE then
     BUFF_ROLE = {}
     for buff, role in pairs({
-      [156064]  = A.group.ROLE.MELEE,   -- Greater Draenic Agility Flask
-      [156073]  = A.group.ROLE.MELEE,   -- Draenic Agility Flask
-      [175456]  = A.group.ROLE.MELEE,   -- Hyper Augmentation
-      [156079]  = A.group.ROLE.RANGED,  -- Greater Draenic Intellect Flask
-      [156070]  = A.group.ROLE.RANGED,  -- Draenic Intellect Flask
-      [175457]  = A.group.ROLE.MELEE,   -- Focus Augmentation
+      [188033]  = A.group.ROLE.MELEE,   -- Flask of the Seventh Demon
+      [251836]  = A.group.ROLE.MELEE,   -- Flask of the Currents
+      [188031]  = A.group.ROLE.RANGED,  -- Flask of the Whispered Pact
+      [251837]  = A.group.ROLE.RANGED,  -- Flask of Endless Fathoms
       [24858]   = A.group.ROLE.RANGED,  -- Moonkin Form
     }) do
       buff = GetSpellInfo(buff)
@@ -179,8 +177,8 @@ local function guessMeleeOrRangedFromBuffs(name)
     return
   end
   for buff, role in pairs(BUFF_ROLE) do
-    if AuraUtil.FindAuraByName(name, buff) then
-      if A.DEBUG >= 2 then A.console:Debugf(M, "guessMeleeOrRangedFromBuffs found name=%s buff=%s role=%s", name, buff, role) end
+    if AuraUtil.FindAuraByName(buff, name) then
+      if A.DEBUG >= 1 then A.console:Debugf(M, "guessMeleeOrRangedFromBuffs found name=%s buff=%s role=%s", name, buff, role) end
       return role
     end
   end
