@@ -1,0 +1,103 @@
+v1.4.1:
+  - fix formatting errors in /choose examples
+  - improve algorithm for guessing what guild rank is for core raiders
+  - add list of mouse shortcuts to Data Broker Group Comp tooltip
+  - add "/fg ." as an alias for "/fg sort"
+  - remove AceConsole dependency
+  - clean up AceGUI usage
+
+v1.4:
+  - add core raider sort method
+  - add /fg last command
+  - add extra sort methods: alpha, ralpha, class, random
+  - add option to use alternate role icons
+  - add total to group comp tooltip
+  - animate the icon when rearranging
+  - stop rearranging when another raid assist starts rearranging
+  - add message when cancelling sort
+  - add message after /fg nosort
+  - add an alternate button color for GUI windows to break up the monotony
+  - improve message when using the clear/skip sort methods
+  - improve spec detection for DPS Shamans and Druids by looking for augment rune buffs
+  - improve split algorithm to distribute more evenly
+  - group 7 is only considered a bench group for mythic difficulty
+  - add option to disable new version notifications
+  - change default sort method option to only allow tmrh, thmr, and nosort
+  - fix error for users who set a custom sort method on a pre-1.3 version of this addon
+  - fix a couple minor issues with the /fg and /choose GUIs
+
+v1.3.4:
+  - pressing escape to close the /fg or /choose GUI no longer pops up the game menu
+  - fix issue with new version notifications always showing up as "0"
+  - fix issue with chat keywords stripping spaces
+  - fix issue with /list not announcing to raid chat
+  - fix broken /fg tmrh and /fg thmr commands
+  - fix localization error when splitting the raid is paused due to combat
+  - display the last /choose, /list, or /listself command in the button tooltip
+
+v1.3.3:
+  - ensure raid tab is open when using /fg clear1 and /fg clear2
+  - stop rearranging when raid is disbanding
+  - fix bug with keyword matching
+
+v1.3.2:
+  - add custom icon
+  - add partial Chinese translation, thanks @cadcamzy
+  - resolve ticket #36: missing system messages when players leave/join
+  - organize config dialog into tabs
+  - simplify the different ways to click the minimap button
+  - add GUI for /fg command, similar to the /choose GUI
+  - add /fg clear1 and /fg clear2 commands to empty out groups 1/2
+  - add /fg skip1 and /fg skip2 commands to exclude players in groups 1/2
+  - add /list and /listself commands: works the same as /choose but it doesn't do the extra /roll step
+  - note the sort mode in tooltip when paused due to combat
+
+v1.3.1:
+  - improve spec detection for DPS Shamans and Druids
+  - improve group-related system messages: modify role changes too
+  - add option to clear all target markers from non-tanks
+  - announce group comp after rearranging groups
+  - note the sort mode in console when pausing/resuming due to combat
+  - make the /choose GUI easier to close
+
+v1.3:
+  - add /choose command
+  - add partial Korean and Russian translations, thanks @kisswow and @mednik
+  - various improvements to damage meter addon integration, including support for TinyDPS
+  - add option to enhance group-related system messages to include player role and new group comp
+  - group comp available as a Data Broker object (a.k.a. LDB plugin), full breakdown in tooltip
+  - group comp available for parties, not just raids
+  - group comp includes melee and ranged counts
+  - group comp correctly excludes sitting players
+  - when sorting healers last in non-full Mythic and Raid Finder groups, ensure they're in the same group
+  - when sorting a group with a DPS Shaman or Druid that we haven't inspected yet, note that they'll be sorted as ranged for now
+  - use Blizzard's standard class order for sorting (as of 6.x: Warrior>DK>Paladin>Monk>Priest>Shaman>Druid>Rogue>Mage>Warlock>Hunter)
+  - console commands are now case-insensitive
+
+v1.2:
+  - add mostly-complete German translation, Dankeschön @pas06
+  - resolve ticket #9: DPS Shamans and Druids are now sorted correctly
+  - display raid comp (e.g. "2/3/10") in button/icon tooltips
+  - keyword matching is now case-insensitive
+  - fix Lua error when config menu gets closed immediately
+  - fix issue with minimap icon not appearing after resetting options
+  - more code refactoring
+
+v1.1:
+  - resolve ticket #2: locale support
+  - resolve ticket #5: issue with minimap icon lingering, again
+  - use class colors when printing player names
+  - remove useless option to always open raid tab when rearranging players
+  - make the 3 Fix Group buttons (minimap icon, raid tab, options pane) function the same way 
+  - major code refactoring
+
+v1.0.2:
+  - resolve ticket #1: issue with chat announcing
+  - resolve ticket #3: issue with minimap icon lingering
+  - additional cleanup if addon disabled
+
+v1.0.1:
+  - enable announcing to raid chat
+
+v1.0:
+  - initial release
