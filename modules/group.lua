@@ -38,8 +38,8 @@ local R = M.private
 local DELAY_REBUILD_FOR_UNKNOWN = 5.0
 local DELAY_REBUILD_FOR_EVENT = 1.0
 
-M.ROLE = {TANK=1, HEALER=2, MELEE=3, RANGED=4, UNKNOWN=5}
-M.ROLE_NAME = {"tank", "healer", "melee", "ranged", "unknown"}
+M.ROLE = {TANK=1, HEALER=2, MELEE=3, RANGED=4, SUPPORT=5, UNKNOWN=6}
+M.ROLE_NAME = {"tank", "healer", "melee", "ranged", "support", "unknown"}
 M.EXAMPLE_PLAYER1 = {rindex=4, name=L["character.thrall"], rank=1, group=2, class="SHAMAN", zone="Tanaan", unitID="raid4", role=M.ROLE.MELEE, isDamager=true}
 M.EXAMPLE_PLAYER2 = {rindex=18, name=L["character.liadrin"], rank=1, group=5, class="PALADIN", zone="Orgrimmar", unitID="raid18", role=M.ROLE.HEALER}
 M.EXAMPLE_PLAYER3 = {rindex=7, name=L["character.chen"], rank=1, group=5, class="MONK", zone="Tanaan", unitID="raid7", role=M.ROLE.TANK}
@@ -214,9 +214,6 @@ local function buildRoster()
       if isRaid then
         p.unitID = "raid"..i
       else
-        -- The number in party unit IDs (party1, party2, party3, party4)
-        -- does NOT correspond to the GetRaidRosterInfo index.
-        -- We have to check names to get the proper unit ID.
         p.unitID, nextGuess = findPartyUnitID(p.name, nextGuess)
       end
       if not p.name then
@@ -228,17 +225,24 @@ local function buildRoster()
         p.isSitting = true
       end
       R.groupSizes[p.group] = R.groupSizes[p.group] + 1
-      unitRole = UnitGroupRolesAssigned(p.unitID)
-      if unitRole == "TANK" then
-        p.role = M.ROLE.TANK
-      elseif unitRole == "HEALER" then
-        p.role = M.ROLE.HEALER
+
+      -- Augmentation Evoker Check
+      if p.class == "EVOKER" and select(6, GetSpecializationInfo(GetSpecialization())) == 1468 then
+        p.role = M.ROLE.SUPPORT
       else
-        p.role = A.damagerRole:GetDamagerRole(p)
-        if p.role ~= M.ROLE.TANK and p.role ~= M.ROLE.HEALER then
-          p.isDamager = true
+        unitRole = UnitGroupRolesAssigned(p.unitID)
+        if unitRole == "TANK" then
+          p.role = M.ROLE.TANK
+        elseif unitRole == "HEALER" then
+          p.role = M.ROLE.HEALER
+        else
+          p.role = A.damagerRole:GetDamagerRole(p)
+          if p.role ~= M.ROLE.TANK and p.role ~= M.ROLE.HEALER then
+            p.isDamager = true
+          end
         end
       end
+
       if not p.isSitting then
         R.roleCountsTHMRU[p.role] = R.roleCountsTHMRU[p.role] + 1
       end
@@ -356,8 +360,8 @@ function M:NumSitting()
   return t
 end
 
-function M:GetRoleCountsTHMRU()
-  return unpack(R.roleCountsTHMRU)
+function M:GetRoleCountsTHMRSU()
+  return unpack(R.roleCountsTHMRSU)
 end
 
 function M:GetComp(style)
