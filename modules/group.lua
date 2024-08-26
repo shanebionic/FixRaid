@@ -38,8 +38,8 @@ local R = M.private
 local DELAY_REBUILD_FOR_UNKNOWN = 5.0
 local DELAY_REBUILD_FOR_EVENT = 1.0
 
-M.ROLE = {TANK=1, HEALER=2, MELEE=3, RANGED=4, SUPPORT=5, UNKNOWN=6}
-M.ROLE_NAME = {"tank", "healer", "melee", "ranged", "support", "unknown"}
+M.ROLE = {TANK=1, HEALER=2, MELEE=3, RANGED=4, UNKNOWN=5, SUPPORT=6}
+M.ROLE_NAME = {"tank", "healer", "melee", "ranged", "unknown", "support"}
 M.EXAMPLE_PLAYER1 = {rindex=4, name=L["character.thrall"], rank=1, group=2, class="SHAMAN", zone="Tanaan", unitID="raid4", role=M.ROLE.MELEE, isDamager=true}
 M.EXAMPLE_PLAYER2 = {rindex=18, name=L["character.liadrin"], rank=1, group=5, class="PALADIN", zone="Orgrimmar", unitID="raid18", role=M.ROLE.HEALER}
 M.EXAMPLE_PLAYER3 = {rindex=7, name=L["character.chen"], rank=1, group=5, class="MONK", zone="Tanaan", unitID="raid7", role=M.ROLE.TANK}
@@ -450,6 +450,10 @@ end
 
 function M:IsRanged(name)
   return name and R.roster[name] and (R.roster[name].role == M.ROLE.RANGED)
+end
+
+function M:IsSupport(name)
+  return name and R.roster[name] and (R.roster[name].role == M.ROLE.SUPPORT)
 end
 
 function M:IsDamager(name)

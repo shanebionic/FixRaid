@@ -13,7 +13,7 @@ M.private = {
         -- Sorting tab
         announceChatAlways = false,
         announceChatPRN = true, -- ignored (implied false) if announceChatAlways == true
-        sortMode = "tmrh", -- other valid values: "thmr", "nosort"
+        sortMode = "tmrhs", -- other valid values: "thmr", "nosort"
         splitOddEven = true,
         resumeAfterCombat = true,
         showExtraSortModes = false,
@@ -225,21 +225,24 @@ R.optionsTable.args.sort.args = {
     width = "double",
     style = "dropdown",
     values = {
-      [1] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.melee.plural"], L["word.ranged.plural"], L["word.healer.plural"]),
-      [2] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.healer.plural"], L["word.melee.plural"], L["word.ranged.plural"]),
-      [3] = L["options.value.sortMode.nosort"],
+      [1] = format("%s > %s > %s > %s > %s", L["word.tank.plural"], L["word.melee.plural"], L["word.ranged.plural"], L["word.healer.plural"], L["word.support.plural"]),
+	  [2] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.melee.plural"], L["word.ranged.plural"], L["word.healer.plural"]),
+      [3] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.healer.plural"], L["word.melee.plural"], L["word.ranged.plural"]),
+	  [4] = L["options.value.sortMode.nosort"],
     },
     get = function(i)
-      if A.options.sortMode == "nosort" then return 3
-      elseif A.options.sortMode == "thmr" then return 2
+      if A.options.sortMode == "nosort" then return 4
+      elseif A.options.sortMode == "thmr" then return 3
+	  elseif A.options.sortMode == "tmrh" then return 2
       else return 1
       end
     end,
     set = function(i,v)
       A.sorter:Stop()
-      if v == 3 then A.options.sortMode = "nosort"
-      elseif v == 2 then A.options.sortMode = "thmr"
-      else A.options.sortMode = "tmrh"
+      if v == 4 then A.options.sortMode = "nosort"
+      elseif v == 2 then A.options.sortMode = "tmrh"
+	  elseif v == 3 then A.options.sortMode = "thmr"
+      else A.options.sortMode = "tmrhs"
       end
     end,
   },
