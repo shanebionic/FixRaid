@@ -36,7 +36,7 @@ local ChatTypeInfo, GetAddOnMetadata, GetBindingKey, GetInstanceInfo, GetRealmNa
 local LE_PARTY_CATEGORY_INSTANCE, RAID_CLASS_COLORS = LE_PARTY_CATEGORY_INSTANCE, RAID_CLASS_COLORS
 
 local LOCALE_SERIAL_COMMA =  (GetLocale() == "enUS") and "," or ""
-local LOCALE_UPPERCASE_NOUNS = (GetLocale() == "deDE")
+local LOCALE_UPPERCASE_NOUNS = (GetLocale() == "enUS")
 -- Lazily built.
 local WATCH_CHAT_KEYWORDS, WATCH_CHAT_KEYWORDS_LIST = false, false
 

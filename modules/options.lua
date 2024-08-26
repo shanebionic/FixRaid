@@ -13,7 +13,7 @@ M.private = {
         -- Sorting tab
         announceChatAlways = false,
         announceChatPRN = true, -- ignored (implied false) if announceChatAlways == true
-        sortMode = "tmrhs", -- other valid values: "thmr", "nosort"
+        sortMode = "tmrh", -- other valid values: "thmr", "nosort"
         splitOddEven = true,
         resumeAfterCombat = true,
         showExtraSortModes = false,
@@ -225,7 +225,7 @@ R.optionsTable.args.sort.args = {
     width = "double",
     style = "dropdown",
     values = {
-      [1] = format("%s > %s > %s > %s > %s", L["word.tank.plural"], L["word.melee.plural"], L["word.ranged.plural"], L["word.healer.plural"], L["word.support.plural"]),
+      [1] = format("%s > %s > %s > %s (1 aug per group)", L["word.tank.plural"], L["word.melee.plural"], L["word.ranged.plural"], L["word.healer.plural"]),
 	  [2] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.melee.plural"], L["word.ranged.plural"], L["word.healer.plural"]),
       [3] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.healer.plural"], L["word.melee.plural"], L["word.ranged.plural"]),
 	  [4] = L["options.value.sortMode.nosort"],
@@ -589,7 +589,7 @@ R.optionsTable.args.ui.args = {
     name = L["options.widget.notifyNewVersion.text"],
     desc = paragraphs({
       format(L["options.widget.notifyNewVersion.desc"], HA(A.NAME)),
-      format(L["addonChannel.print.newerVersion"], A.NAME, H("9000.1"), A.VERSION_PACKAGED),
+      format(L["addonChannel.print.newerVersion"], A.NAME, H("1.0.5"), A.VERSION_PACKAGED),
     }),
     type = "toggle",
     width = "full",
