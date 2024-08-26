@@ -42,7 +42,7 @@ local SPECID_ROLE = {
   [254] = "ranged",  -- Marksmanship Hunter
   [255] = "melee",   -- Survival Hunter
   [1467] = "ranged", --Devastation Evoker
-  [1473] = "ranged", --Augmentation Evoker
+  [1473] = "support", --Augmentation Evoker
 }
 -- Lazily populated.
 local BUFF_ROLE = false
