@@ -34,7 +34,7 @@ end
 local function groupCompOnTooltipShow(tooltip)
   if A.DEBUG >= 1 then A.console:Debugf(M, "groupCompOnTooltipShow tooltip=%s", tostring(tooltip)) end
   if IsInGroup() then
-    local t, h, m, r, u = A.group:GetRoleCountsTHMRU()
+    local t, h, m, r, u = A.group:GetRoleCountsTHMRSU()
     tooltip:AddDoubleLine(format("%s (%s):", L["phrase.groupComp"], (IsInRaid() and L["word.raid"] or L["word.party"])), A.util:FormatGroupComp(A.util.GROUP_COMP_STYLE.TEXT_SHORT, t, h, m, r, u), 1,1,0, 1,1,0)
     tooltip:AddLine(" ")
     tooltip:AddDoubleLine(A.util:GetRoleIcon("TANK").." "..L["word.tank.plural"],       tostring(t), 1,1,1, 1,1,0)

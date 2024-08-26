@@ -291,6 +291,13 @@ function M:StripRealm(name)
   return strsplit("-", name, 2)
 end
 
+function A.util:IsAugmentationEvoker(unit)
+    local _, class = UnitClass(unit)
+    local specID = GetInspectSpecialization(unit)
+    local AUGMENTATION_SPEC_ID = 1478 -- Replace with actual spec ID
+    return class == "EVOKER" and specID == AUGMENTATION_SPEC_ID
+end
+
 function M:BlankInline(height, width)
   return format("|TInterface\\AddOns\\%s\\media\\blank.blp:%d:%d:0:0|t", A.NAME, height or 8, width or 8)
 end
