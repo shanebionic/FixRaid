@@ -1,0 +1,77 @@
+local A, L = unpack(select(2, ...))
+local M = A:NewModule("frGui")
+A.frGui = M
+M.private = {
+    frame = _G["FixRaidFrame"],
+    label = _G["FixRaidLabel"],
+}
+
+local R = M.private
+
+-- Set text for FontString and buttons in Lua
+local function setTexts()
+    _G["FixRaidLabel"]:SetText("FixRaid")
+    _G["FixRaidSortButton"]:SetText("Sort")
+    _G["FixRaidSplitButton"]:SetText("Split")
+    _G["FixRaidLastButton"]:SetText("Last")
+    _G["FixRaidCancelButton"]:SetText("Cancel")
+    _G["FixRaidClear1Button"]:SetText("Clear1")
+    _G["FixRaidClear2Button"]:SetText("Clear2")
+    _G["FixRaidSkip1Button"]:SetText("Skip1")
+    _G["FixRaidSkip2Button"]:SetText("Skip2")
+    _G["FixRaidTmrhButton"]:SetText("Tmrh")
+    _G["FixRaidThmrButton"]:SetText("Thmr")
+    _G["FixRaidNosortButton"]:SetText("Nosort")
+    _G["FixRaidCoreButton"]:SetText("Core")
+    _G["FixRaidMeterButton"]:SetText("Meter")
+    _G["FixRaidCloseButton"]:SetText("Close")
+end
+
+-- Initialize the buttons by setting their OnClick scripts and text
+local function initializeButtons()
+    setTexts()
+
+    local function handleCommand(cmd)
+        A.frCommand:Command(cmd)
+        if IsControlKeyDown() then
+            R.frame:Hide()
+        end
+    end
+
+    _G["FixRaidSortButton"]:SetScript("OnClick", function() handleCommand("sort") end)
+    _G["FixRaidSplitButton"]:SetScript("OnClick", function() handleCommand("split") end)
+    -- Add additional button handlers here...
+
+    _G["FixRaidCloseButton"]:SetScript("OnClick", function() R.frame:Hide() end)
+end
+
+-- Toggle the frame visibility
+function M:Toggle()
+    if R.frame:IsShown() then
+        R.frame:Hide()
+    else
+        M:Open()
+    end
+end
+
+-- Open the frame
+function M:Open()
+    if not R.frame then
+        return
+    end
+    initializeButtons()
+    R.frame:Show()
+end
+
+-- Function to refresh the label's image (if needed)
+function M:Refresh()
+    if R.label then
+        if A.sorter:IsPaused() then
+            R.label:SetText("Paused") -- Change this to the relevant image or text
+        elseif A.sorter:IsProcessing() and time() % 2 == 0 then
+            R.label:SetText("Processing") -- Change this to the relevant image or text
+        else
+            R.label:SetText("Ready") -- Change this to the relevant image or text
+        end
+    end
+end

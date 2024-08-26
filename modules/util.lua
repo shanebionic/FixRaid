@@ -179,7 +179,7 @@ function M:GetFixedInstanceSize()
 end
 
 function M:GetAddonNameAndVersion(name)
-  local v = C_AddOns.GetAddOnMetadata(name, "Version")
+  local v = GetAddOnMetadata(name, "Version")
   if v then
     if strmatch(v, "v.*") then
       return name.." "..v
