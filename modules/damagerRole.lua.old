@@ -41,8 +41,8 @@ local SPECID_ROLE = {
   [253] = "ranged",  -- Beast Mastery Hunter
   [254] = "ranged",  -- Marksmanship Hunter
   [255] = "melee",   -- Survival Hunter
-  [1467] = "ranged", --Devastation Evoker
-  [1473] = "ranged", --Augmentation Evoker
+  [1467] = "ranged",  -- Devastation Evoker
+  [1473] = "ranged",  -- Devastation Evoker
 }
 -- Lazily populated.
 local BUFF_ROLE = false
@@ -159,29 +159,28 @@ function M:FIXGROUPS_PLAYER_LEFT(player)
   end
 end
 
-local function guessMeleeOrRangedFromBuffs(name)
+local function guessMeleeOrRangedFromBuffs(unitToken)
   if not BUFF_ROLE then
     BUFF_ROLE = {}
-    for buff, role in pairs({
+    for buffID, role in pairs({
+      -- Comment out old flasks
       --[188033]  = A.group.ROLE.MELEE,   -- Flask of the Seventh Demon
       --[251836]  = A.group.ROLE.MELEE,   -- Flask of the Currents
       --[188031]  = A.group.ROLE.RANGED,  -- Flask of the Whispered Pact
-     --[251837]  = A.group.ROLE.RANGED,  -- Flask of Endless Fathoms
-      --[24858]   = A.group.ROLE.RANGED,  -- Moonkin Form
+      --[251837]  = A.group.ROLE.RANGED,  -- Flask of Endless Fathoms
+      [24858]   = A.group.ROLE.RANGED,  -- Moonkin Form
     }) do
-      buff = C_Spell.GetSpellInfo(buff)
-      if A.DEBUG >= 1 then A.console:Debugf(M, "buff=%s role=%s", tostring(buff), role) end
-      if buff then
-        BUFF_ROLE[buff] = role
+      local spellName = C_Spell.GetSpellInfo(buffID)
+      if spellName then
+        BUFF_ROLE[spellName] = role
       end
     end
   end
-  if UnitClass(name) == "HUNTER" then
-    return
-  end
-  for buff, role in pairs(BUFF_ROLE) do
-    if AuraUtil.FindAuraByName(buff, name) then
-      if A.DEBUG >= 1 then A.console:Debugf(M, "guessMeleeOrRangedFromBuffs found name=%s buff=%s role=%s", name, buff, role) end
+
+  for spellName, role in pairs(BUFF_ROLE) do
+    local aura = C_UnitAuras.GetAuraDataBySpellName(unitToken, spellName)
+    if aura then
+      if A.DEBUG >= 1 then A.console:Debugf(M, "guessMeleeOrRangedFromBuffs found unitToken=%s spellName=%s role=%s", unitToken, spellName, role) end
       return role
     end
   end
@@ -243,6 +242,7 @@ function M:GetDamagerRole(player)
   -- In the meantime, try two fallbacks to get a tentative answer:
   -- 1) Guess based on the presence of certain buffs; and
   -- 2) Check the db caches, if we've encountered this player before.
+
   local role = guessMeleeOrRangedFromBuffs(player.name)
   if role then
     return role
