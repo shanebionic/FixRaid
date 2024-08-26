@@ -627,21 +627,6 @@ local function buildDispatchTable()
       d.alias(false, alias)
     end
   end
-  -- Localized class names.
-  for class, alias in pairs(LOCALIZED_CLASS_NAMES_MALE) do
-	print("Checking initialization...")
-	print("CLASS_ALIAS:", CLASS_ALIAS)
-	print("DISPATCH:", DISPATCH)
-	print("LOCALIZED_CLASS_NAMES_MALE:", LOCALIZED_CLASS_NAMES_MALE)
-	print("LOCALIZED_CLASS_NAMES_FEMALE:", LOCALIZED_CLASS_NAMES_FEMALE)
-	print("CLASS_SORT_ORDER:", CLASS_SORT_ORDER)
-    CLASS_ALIAS[clean(alias)] = class
-    DISPATCH[strlower(class)].alias(true, A.util:LocaleLowerNoun(alias))
-  end
-  for class, alias in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do
-    CLASS_ALIAS[clean(alias)] = class
-    DISPATCH[strlower(class)].alias(true, A.util:LocaleLowerNoun(alias))
-  end
   -- Localized shorthand class aliases.
   for _, class in ipairs(CLASS_SORT_ORDER) do
     for alias in gmatch(L["choose.classAliases."..strlower(class)], "[^,]+") do

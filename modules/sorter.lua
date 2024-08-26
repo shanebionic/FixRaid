@@ -272,6 +272,11 @@ function M:ClearTimeout(resetCount)
   end
 end
 
+-- Timeouts can happen for a variety of reasons.
+-- Example: While the raid leader's original request to move a player is en
+-- route to the server, that player leaves the group or is moved to a different
+-- group by someone else.
+-- Another example: Good old-fashioned lag.
 function M:ScheduleTimeout()
   M:ClearTimeout(false)
   R.timeoutTimer = M:ScheduleTimer(function()
