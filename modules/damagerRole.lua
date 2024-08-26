@@ -41,8 +41,8 @@ local SPECID_ROLE = {
   [253] = "ranged",  -- Beast Mastery Hunter
   [254] = "ranged",  -- Marksmanship Hunter
   [255] = "melee",   -- Survival Hunter
-  [1467] = "ranged", --Devastation Evoker
-  [1473] = "ranged", --Augmentation Evoker
+  [1467] = "ranged",  -- Devastation Evoker
+  [1473] = "ranged",  -- Devastation Evoker
 }
 -- Lazily populated.
 local BUFF_ROLE = false
@@ -51,7 +51,7 @@ local DB_CLEANUP_GUILD_MAX_AGE_DAYS = 21
 local DB_CLEANUP_NONGUILD_MAX_AGE_DAYS = 1.5
 
 local format, ipairs, max, pairs, select, time, tostring = format, ipairs, max, pairs, select, time, tostring
-local GetSpecialization, GetSpecializationInfo, GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit = GetSpecialization, GetSpecializationInfo, C_Spell.GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit
+local GetSpecialization, GetSpecializationInfo, GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit = GetSpecialization, GetSpecializationInfo, GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit
 
 local function cleanDbCache(cache, maxAgeDays)
   local earliest = time() - (60*60*24*maxAgeDays)
@@ -169,7 +169,7 @@ local function guessMeleeOrRangedFromBuffs(name)
       [251837]  = A.group.ROLE.RANGED,  -- Flask of Endless Fathoms
       [24858]   = A.group.ROLE.RANGED,  -- Moonkin Form
     }) do
-      buff = C_Spell.C_Spell.GetSpellInfo(buff)
+      buff = C_Spell.GetSpellInfo(buff)
       if A.DEBUG >= 1 then A.console:Debugf(M, "buff=%s role=%s", tostring(buff), role) end
       if buff then
         BUFF_ROLE[buff] = role
