@@ -11,7 +11,7 @@ function M:OnEnable()
     key = "alpha",
     name = L["sorter.mode.alpha"],
     desc = function(t)
-      t:AddLine(format("%s:|n%s.", L["tooltip.right.fixGroups"], L["sorter.mode.alpha"]), 1,1,0, true)
+      t:AddLine(format("%s:|n%s.", L["tooltip.right.fixRaid"], L["sorter.mode.alpha"]), 1,1,0, true)
       t:AddLine(" ")
       t:AddLine(L["sorter.print.notUseful"], 1,1,1, true)
     end,
@@ -27,7 +27,7 @@ function M:OnEnable()
     key = "ralpha",
     name = L["sorter.mode.ralpha"],
     desc = function(t)
-      t:AddLine(format("%s:|n%s.", L["tooltip.right.fixGroups"], L["sorter.mode.ralpha"]), 1,1,0, true)
+      t:AddLine(format("%s:|n%s.", L["tooltip.right.fixRaid"], L["sorter.mode.ralpha"]), 1,1,0, true)
       t:AddLine(" ")
       t:AddLine(L["sorter.print.notUseful"], 1,1,1, true)
     end,

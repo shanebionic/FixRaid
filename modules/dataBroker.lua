@@ -24,7 +24,7 @@ local function groupCompOnClick(frame, button)
     end
   else
     if button == "RightButton" then
-      A.fgGui:Toggle()
+      A.frGui:Toggle()
     else
       A.utilGui:ToggleRaidTab()
     end

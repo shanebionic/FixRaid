@@ -156,9 +156,9 @@ R.optionsTable.args.main.args = {
   buttonCommandFixGroupsHelp = {
     order = 310,
     type = "execute",
-    name = "/fg",
-    desc = format(L["gui.fixGroups.intro"], H("/fg"), H("/fixgroups")),
-    func = function() A.utilGui:CloseConfig() A.fgCommand:Command("help") end,
+    name = "/fr",
+    desc = format(L["gui.fixRaid.intro"], H("/fr"), H("/fixraid")),
+    func = function() A.utilGui:CloseConfig() A.frCommand:Command("help") end,
   },
   buttonCommandChoose = {
     order = 320,
@@ -254,7 +254,7 @@ R.optionsTable.args.sort.args = {
     name = L["options.widget.splitOddEven.text"],
     desc = paragraphs({
       L["options.widget.splitOddEven.desc.1"],
-      format(L["options.widget.splitOddEven.desc.2"], H("/fg split"), H(L["button.splitGroups.text"])),
+      format(L["options.widget.splitOddEven.desc.2"], H("/fr split"), H(L["button.splitGroups.text"])),
     }),
     type = "toggle",
     width = "full",
@@ -474,7 +474,7 @@ R.optionsTable.args.mark.args = {
   partyMark = {
     order = 210,
     name = L["options.widget.partyMark.text"],
-    desc = format(L["options.widget.partyMark.desc"], H(L["button.fixGroups.text"])),
+    desc = format(L["options.widget.partyMark.desc"], H(L["button.fixRaid.text"])),
     type = "toggle",
     width = "full",
     get = function(i) return A.options.partyMark end,
@@ -566,7 +566,7 @@ R.optionsTable.args.ui.args = {
   addButtonToRaidTab = {
     order = 20,
     name = L["options.widget.addButtonToRaidTab.text"],
-    desc = format(L["options.widget.addButtonToRaidTab.desc"], H(L["button.fixGroups.text"]), H(A.util:GetBindingKey("TOGGLESOCIAL", "O"))),
+    desc = format(L["options.widget.addButtonToRaidTab.desc"], H(L["button.fixRaid.text"]), H(A.util:GetBindingKey("TOGGLESOCIAL", "O"))),
     type = "toggle",
     width = "full",
     get = function(i) return A.options.addButtonToRaidTab end,
@@ -723,7 +723,7 @@ R.optionsTable.args.ui.args = {
 }
 
 function M:OnInitialize()
-  A.db = LibStub("AceDB-3.0"):New("FixGroupsDB", R.defaults, true)
+  A.db = LibStub("AceDB-3.0"):New("FixRaidDB", R.defaults, true)
   -- Intentionally overwriting the module reference.
   -- Can always do A:GetModule("options") if needed.
   A.options = A.db.profile.options

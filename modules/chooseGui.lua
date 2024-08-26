@@ -20,7 +20,7 @@ local AceGUI = LibStub("AceGUI-3.0")
 
 local function onLeaveButton(widget)
   GameTooltip:Hide()
-  R.window:_SetStatusText("")
+  R.window:SetStatusText("")
 end
 
 local function getCommand(cmd, mode, modeType, isShiftClick)
@@ -98,7 +98,6 @@ local function onCloseWindow(widget)
 end
 
 local function resetWindowSize()
-  R.window:ClearAllPoints()
   R.window:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
   R.window:SetWidth(675)
   R.window:SetHeight(568)
@@ -122,11 +121,12 @@ function M:Open(cmd)
     end
   end
   R.cmd = cmd
-  R.window = AceGUI:Create("Window")
+  R.window = AceGUI:Create("Frame")
   R.window:SetTitle(A.NAME.." "..format(L["gui.title"], "/"..cmd))
   resetWindowSize()
   R.window:SetCallback("OnClose", onCloseWindow)
-  local c = A.utilGui:SetupWindow(R.window)
+  R.window:SetLayout("Flow")
+  local c = R.window
 
   local widget = AceGUI:Create("Label")
   if cmd == "choose" then
@@ -134,10 +134,10 @@ function M:Open(cmd)
     widget:SetText(format(L["gui.choose.intro"], H("/"..cmd)))
   elseif cmd == "list" then
     widget:SetImage("Interface\\BUTTONS\\UI-GuildButton-MOTD-Up")
-    widget:SetText(L["gui.fixGroups.help.list"].." "..format(L["gui.list.intro"], H("/"..cmd), H("/choose")))
+    widget:SetText(L["gui.fixRaid.help.list"].." "..format(L["gui.list.intro"], H("/"..cmd), H("/choose")))
   elseif cmd == "listself" then
     widget:SetImage("Interface\\BUTTONS\\UI-GuildButton-MOTD-Disabled")
-    widget:SetText(L["gui.fixGroups.help.listself"].." "..format(L["gui.list.intro"], H("/"..cmd), H("/choose")))
+    widget:SetText(L["gui.fixRaid.help.listself"].." "..format(L["gui.list.intro"], H("/"..cmd), H("/choose")))
   else
     A.console:Errorf(M, "invalid cmd %s!", tostring(cmd))
     return
@@ -203,28 +203,11 @@ function M:Open(cmd)
     addButton(false, c, cmd, "option2", "option")
     addButton(false, c, cmd, "option3+", "option")
     newRow(c)
-
-    widget = AceGUI:Create("Heading")
-    widget:SetText(format(L["gui.header.examples"], "/"..cmd))
-    widget:SetFullWidth(true)
-    c:AddChild(widget)
-    newRow(c)
-
-    if not R.mockSession then
-      R.mockSession = {}
-      A.chooseMockup:Mockup(function(line) tinsert(R.mockSession, line) end)
-      R.mockSession = tconcat(R.mockSession, "|n")
-    end
-    widget = AceGUI:Create("Label")
-    widget:SetFontObject(GameFontHighlight)
-    widget:SetText(R.mockSession)
-    widget:SetFullWidth(true)
-    c:AddChild(widget)
   end
 end
 
 function M:SetupTooltip(widget, cmd, mode, modeType)
-  R.window:_SetStatusText(getCommand(cmd, mode, modeType, false))
+  R.window:SetStatusText(getCommand(cmd, mode, modeType, false))
   local t = GameTooltip
   t:SetOwner(widget.frame, "ANCHOR_TOPRIGHT")
   t:ClearLines()

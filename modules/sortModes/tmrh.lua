@@ -25,7 +25,7 @@ function M:OnEnable()
   A.sortModes:Register({
     key = "tmrh",
     name = L["sorter.mode.tmrh"],
-    desc = format("%s:|n%s.", L["tooltip.right.fixGroups"], L["sorter.mode.tmrh"]),
+    desc = format("%s:|n%s.", L["tooltip.right.fixRaid"], L["sorter.mode.tmrh"]),
     getDefaultCompareFunc = getDefaultCompareFunc,
     onBeforeSort = function(sortMode, keys, players)
       if sortMode.isIncludingSitting then

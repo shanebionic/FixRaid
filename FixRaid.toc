@@ -1,7 +1,7 @@
-## Interface: 80000
+## Interface: 110002
 ## Title: FixRaid
 ## Author: denalb
-## Version: 1.0.2
+## Version: 1.0.10
 ## Notes: Automatically set up groups in raids.
 ## DefaultState: Enabled
 ## SavedVariables: FixRaidDB
@@ -33,8 +33,8 @@ modules\chooseMockup.lua
 modules\console.lua
 modules\damagerRole.lua
 modules\dataBroker.lua
-modules\fgCommand.lua
-modules\fgGui.lua
+modules\frCommand.lua
+modules\frGui.lua
 modules\group.lua
 modules\inspect.lua
 modules\marker.lua

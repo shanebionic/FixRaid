@@ -12,11 +12,11 @@ function M:OnEnable()
     name = L["sorter.mode.default"],
     aliases = {"default", "."},
     desc = function(t)
-      t:AddLine(L["gui.fixGroups.help.sort"], 1,1,0, true)
+      t:AddLine(L["gui.fixRaid.help.sort"], 1,1,0, true)
       t:AddLine(" ")
-      t:AddLine(format(L["gui.fixGroups.help.note.sameAsLeftClicking"], A.util:Highlight(L["button.fixGroups.text"])), 1,1,1, true)
+      t:AddLine(format(L["gui.fixRaid.help.note.sameAsLeftClicking"], A.util:Highlight(L["button.fixRaid.text"])), 1,1,1, true)
       t:AddLine(" ")
-      t:AddLine(format(L["gui.fixGroups.help.note.defaultMode"], A.util:Highlight(A.sortModes:GetDefault().name)), 1,1,1, true)
+      t:AddLine(format(L["gui.fixRaid.help.note.defaultMode"], A.util:Highlight(A.sortModes:GetDefault().name)), 1,1,1, true)
     end,
     onBeforeStart = function()
       A.console:Errorf(M, "this func should never be called - the sorter module should be handling this sort mode")

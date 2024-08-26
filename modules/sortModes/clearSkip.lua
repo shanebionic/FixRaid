@@ -25,13 +25,13 @@ end
 
 local function getDescFunc(key)
   return function(t)
-    t:AddLine(L["gui.fixGroups.help."..key], 1,1,0, true)
+    t:AddLine(L["gui.fixRaid.help."..key], 1,1,0, true)
     t:AddLine(" ")
-    t:AddLine(L["gui.fixGroups.help.sort"], 1,1,0, true)
+    t:AddLine(L["gui.fixRaid.help.sort"], 1,1,0, true)
     t:AddLine(" ")
-    t:AddLine(format(L["gui.fixGroups.help.note.defaultMode"], A.util:Highlight(A.sortModes:GetDefault().name)), 1,1,1, true)
+    t:AddLine(format(L["gui.fixRaid.help.note.defaultMode"], A.util:Highlight(A.sortModes:GetDefault().name)), 1,1,1, true)
     t:AddLine(" ")
-    t:AddLine(L["gui.fixGroups.help.note.clearSkip"], 1,1,1, true)
+    t:AddLine(L["gui.fixRaid.help.note.clearSkip"], 1,1,1, true)
   end
 end
 

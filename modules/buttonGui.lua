@@ -1,4 +1,4 @@
---- Define the minimap icon, the Fix Groups button on the raid tab, and
+--- Define the minimap icon, the Fix Raid button on the raid tab, and
 -- their tooltips.
 local A, L = unpack(select(2, ...))
 local M = A:NewModule("buttonGui", "AceEvent-3.0", "AceTimer-3.0")
@@ -21,23 +21,15 @@ local CreateFrame, InCombatLockdown, IsControlKeyDown, IsInGroup, IsShiftKeyDown
 local CUBE_ICON_0 = "Interface\\Addons\\"..A.NAME.."\\media\\cubeIcon0_64.tga"
 local CUBE_ICON_1 = "Interface\\Addons\\"..A.NAME.."\\media\\cubeIcon1_64.tga"
 local CUBE_ICON_BW = "Interface\\Addons\\"..A.NAME.."\\media\\cubeIconBW_64.tga"
-local TOOLTIP_RIGHT_GUI = format(L["tooltip.right.gui"], A.util:Highlight("/fg"))
+local TOOLTIP_RIGHT_GUI = format(L["tooltip.right.gui"], A.util:Highlight("/fr"))
 
 local function handleClick(_, button)
   if button == "RightButton" then
-    if IsControlKeyDown() then
-      A.fgCommand:Command("config")
-    else
-      A.fgCommand:Command("")
-    end
-  else
-    if IsControlKeyDown() then
-      A.fgCommand:Command("cancel")
-    elseif IsShiftKeyDown() then
-      A.fgCommand:Command("last")
-    else
-      A.fgCommand:Command("default")
-    end
+    A.frCommand:Command("")
+  elseif button == "LeftButton" then
+    A.frCommand:Command("default")
+  elseif button == "MiddleButton" then
+    A.frCommand:Command("split")
   end
 end
 
@@ -76,10 +68,10 @@ local function setupRaidTabButton()
     return
   end
   local b = CreateFrame("BUTTON", nil, RaidFrame, "UIPanelButtonTemplate")
-  b:SetPoint("TOPRIGHT", RaidFrameRaidInfoButton, "TOPLEFT", 0, 0)
+  b:SetPoint("BOTTOMLEFT", RaidFrame, "BOTTOMLEFT", 3, 5)
   b:SetSize(RaidFrameRaidInfoButton:GetWidth(), RaidFrameRaidInfoButton:GetHeight())
   b:GetFontString():SetFont(RaidFrameRaidInfoButton:GetFontString():GetFont())
-  b:SetText(L["button.fixGroups.text"])
+  b:SetText(L["button.fixRaid.text"])
   b:RegisterForClicks("AnyUp")
   b:SetScript("OnClick", handleClick)
   b:SetScript("OnEnter", function(frame) GameTooltip:SetOwner(frame, "ANCHOR_BOTTOMRIGHT") M:SetupTooltip(GameTooltip, false) end)
@@ -121,20 +113,12 @@ function M:SetupTooltip(tooltip, isMinimapIcon)
     tooltip:AddLine(A.util:Highlight(A.sorter:GetPausedSortMode()))
   end
   tooltip:AddLine(" ")
-  tooltip:AddDoubleLine(L["phrase.mouse.clickLeft"], L["tooltip.right.fixGroups"]..":", 1,1,1, 1,1,0)
+  tooltip:AddDoubleLine(L["phrase.mouse.clickLeft"], L["tooltip.right.fixRaid"]..":", 1,1,1, 1,1,0)
   tooltip:AddDoubleLine(" ", A.sortModes:GetDefault().name, 1,1,1, 1,1,0)
   tooltip:AddLine(" ")
+  tooltip:AddDoubleLine(L["phrase.mouse.clickMiddle"], L["tooltip.right.split"], 1,1,1, 1,1,0)
+  tooltip:AddLine(" ")
   tooltip:AddDoubleLine(L["phrase.mouse.clickRight"], TOOLTIP_RIGHT_GUI, 1,1,1, 1,1,0)
-  -- There are a few undocumented shortcuts, subject to change or removal
-  -- in a future version of this addon. We could make the mouse shortcuts
-  -- user-configurable, but that's probably overkill... the default shortcuts
-  -- are pretty reasonable as-is.
-  --tooltip:AddLine(" ")
-  --tooltip:AddDoubleLine(L["phrase.mouse.shiftClickLeft"], L["sorter.print.last"], 1,1,1, 1,1,0)
-  --tooltip:AddLine(" ")
-  --tooltip:AddDoubleLine(L["phrase.mouse.ctrlClickLeft"], L["tooltip.right.cancel"], 1,1,1, 1,1,0)
-  --tooltip:AddLine(" ")
-  --tooltip:AddDoubleLine(L["phrase.mouse.ctrlClickRight"], L["tooltip.right.config"], 1,1,1, 1,1,0)
   if isMinimapIcon then
     tooltip:AddLine(" ")
     tooltip:AddDoubleLine(L["phrase.mouse.drag"], L["tooltip.right.moveMinimapIcon"], 1,1,1, 1,1,0)
@@ -180,7 +164,7 @@ end
 local function setUI(buttonText, iconTexture)
   R.iconLDB.icon = iconTexture
   R.raidTabButton:SetText(L[buttonText])
-  if buttonText == "button.fixGroups.text" then
+  if buttonText == "button.fixRaid.text" then
     R.raidTabButton:Enable()
   else
     R.raidTabButton:Disable()
@@ -188,7 +172,7 @@ local function setUI(buttonText, iconTexture)
 end
 
 function M:Refresh()
-  A.fgGui:Refresh()
+  A.frGui:Refresh()
   if not M:IsEnabled() then
     R.icon:Hide(A.NAME)
     R.raidTabButton:Hide()
@@ -196,18 +180,18 @@ function M:Refresh()
   end
   if A.sorter:IsProcessing() then
     if time() % 2 == 0 then
-      setUI("button.fixGroups.working.text", CUBE_ICON_0)
+      setUI("button.fixRaid.working.text", CUBE_ICON_0)
     else
-      setUI("button.fixGroups.working.text", CUBE_ICON_1)
+      setUI("button.fixRaid.working.text", CUBE_ICON_1)
     end
   elseif A.sorter:IsPaused() then
-    setUI("button.fixGroups.paused.text", CUBE_ICON_BW)
+    setUI("button.fixRaid.paused.text", CUBE_ICON_BW)
   elseif A.util:IsLeader() then
-    setUI("button.fixGroups.text", "Interface\\GROUPFRAME\\UI-Group-LeaderIcon")
+    setUI("button.fixRaid.text", "Interface\\GROUPFRAME\\UI-Group-LeaderIcon")
   elseif A.util:IsLeaderOrAssist() then
-    setUI("button.fixGroups.text", "Interface\\GROUPFRAME\\UI-GROUP-ASSISTANTICON")
+    setUI("button.fixRaid.text", "Interface\\GROUPFRAME\\UI-GROUP-ASSISTANTICON")
   else
-    setUI("button.fixGroups.text", CUBE_ICON_1)
+    setUI("button.fixRaid.text", CUBE_ICON_1)
   end
   if A.options.showMinimapIconAlways or (A.options.showMinimapIconPRN and A.util:IsLeaderOrAssist()) then
     R.icon:Show(A.NAME)

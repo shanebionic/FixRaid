@@ -14,13 +14,13 @@ function M:OnEnable()
     name = L["sorter.mode.meter"],
     aliases = {"dps"},
     desc = function(t)
-      t:AddLine(format("%s: |n%s.", L["tooltip.right.fixGroups"], L["sorter.mode.meter"]), 1,1,0)
+      t:AddLine(format("%s: |n%s.", L["tooltip.right.fixRaid"], L["sorter.mode.meter"]), 1,1,0)
       t:AddLine(" ")
-      t:AddLine(format(L["gui.fixGroups.help.note.meter.1"], A.meter:GetSupportedAddonList()), 1,1,1, true)
+      t:AddLine(format(L["gui.fixRaid.help.note.meter.1"], A.meter:GetSupportedAddonList()), 1,1,1, true)
       t:AddLine(" ")
       t:AddLine(A.meter:TestInterop(), 1,1,1, true)
       t:AddLine(" ")
-      t:AddLine(L["gui.fixGroups.help.note.meter.2"], 1,1,1, true)
+      t:AddLine(L["gui.fixRaid.help.note.meter.2"], 1,1,1, true)
     end,
     onStart = function()
       A.meter:BuildSnapshot(true)

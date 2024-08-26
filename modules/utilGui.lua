@@ -39,18 +39,31 @@ function M:OpenRaidTab()
 end
 
 function M:ToggleRaidTab()
-  ToggleFriendsFrame(4)
+  ToggleFriendsFrame(3)
 end
 
 function M:OpenConfig()
-  InterfaceOptionsFrame_OpenToCategory(A.NAME)
-  InterfaceOptionsFrame_OpenToCategory(A.NAME)
+  -- Use the new Settings API to open the specific category for your addon
+  if Settings and Settings.OpenToCategory then
+    local category = Settings.GetCategory(A.NAME)
+    if category then
+      Settings.OpenToCategory(A.NAME)
+    else
+      -- If for some reason the category isn't found, fall back to opening the settings menu
+      Settings.OpenToCategory(Settings.Categories.Interface)
+    end
+  else
+    -- Fallback for older versions or issues
+    InterfaceOptionsFrame_OpenToCategory(A.NAME)
+  end
 end
 
 function M:CloseConfig()
-  if InterfaceOptionsFrame:IsShown() then
-    InterfaceOptionsFrame:Hide()
-  end
+    -- Check if the config panel is shown and hide it using the newer method
+    local panel = SettingsPanel or InterfaceOptionsFrame
+    if panel and panel:IsShown() then
+        panel:Hide()
+    end
 end
 
 function M:InsertText(text)
@@ -66,7 +79,7 @@ function M:InsertText(text)
 end
 
 function M:GetElvUISkinModule()
-  if IsAddOnLoaded("ElvUI") and ElvUI then
+  if C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI then
     local E = ElvUI[1]
     if E.private.skins.blizzard.enable and E.private.skins.blizzard.nonraid then
       return E:GetModule("Skins")
@@ -87,110 +100,20 @@ function M:AddTexturedButton(registry, button, style)
   registry[button] = true
 end
 
--- Define a custom AceGUI layout named FILL_PLUS_STATUS_BAR for our window.
-do
-  local noop = function() return 0 end
-  local dummy = {
-    [1] = {
-      SetWidth = noop,
-      SetHeight = noop,
-      frame = {
-        SetAllPoints = noop,
-        Show = noop,
-      },
-    },
-  }
-  AceGUI:RegisterLayout(FILL_PLUS_STATUS_BAR, function(content, children)
-    if #children < 2 or #children[2].children < 2 then
-      return
-    end
-    local top, bottom = children[1], children[2]
-    local statusBar, closeButton = bottom.children[1], bottom.children[2]
-    local barHeight = max(statusBar.frame:GetHeight(), closeButton.frame:GetHeight())
-
-    top.frame:SetPoint("TOPLEFT")
-    top:SetWidth(content:GetWidth() or 0)
-    top:SetHeight((content:GetHeight() or 0) - barHeight)
-    top.frame:Show()
-
-    statusBar:SetWidth((content:GetWidth() or 0) - closeButton.frame:GetWidth() - 4)
-    bottom.frame:SetPoint("BOTTOMLEFT")
-    bottom:SetWidth(content:GetWidth() or 0)
-    bottom:SetHeight(barHeight)
-    bottom.frame:Show()
-
-    -- Ensure content.obj:LayoutFinished gets called.
-    dummy[1].frame.GetHeight = function() return top.frame:GetHeight() + barHeight end
-    AceGUI.LayoutRegistry.FILL(content, dummy)
-  end)
-end
-
---- Remove custom modifications done to frames owned by AceGUI. This should
--- be called prior to releasing the widget back into the pool (i.e.,
--- calling AceGUI:Release).
+--- Remove custom modifications done to frames owned by AceGUI.
 function M:CleanupWindow(window, texturedButtonRegistry)
-  if texturedButtonRegistry then
-    for button, _ in pairs(texturedButtonRegistry) do
-      texturedButtonRegistry[button] = nil
-      button.frame:SetNormalTexture(nil)
-      button.frame:SetHighlightTexture(nil)
+    if texturedButtonRegistry then
+        for button, _ in pairs(texturedButtonRegistry) do
+            texturedButtonRegistry[button] = nil
+            button.frame:SetNormalTexture("")  -- Set to an empty string instead of nil
+            button.frame:SetHighlightTexture("")
+        end
     end
-  end
-  window.frame:SetPropagateKeyboardInput(false)
-  window.frame:SetScript("OnKeyDown", nil)
-  window.frame:SetScript("OnDragStart", nil)
-  window.frame:SetScript("OnDragStop", nil)
-  window.frame:RegisterForDrag()
-  window._CloseWithSound = nil
-  window._SetStatusText = nil
-end
-
-function M:SetupWindow(window)
-  -- Add custom scripts and properties to the window's frame.
-  window.frame:SetPropagateKeyboardInput(true)
-  window.frame:SetScript("OnKeyDown", function(frame, key)
-    if GetBindingFromClick(key) == "TOGGLEGAMEMENU" then
-      frame:SetPropagateKeyboardInput(false)
-      window:_CloseWithSound()
-    end
-  end)
-  window.frame:SetScript("OnDragStart", window.frame.StartMoving)
-  window.frame:SetScript("OnDragStop", window.frame.StopMovingOrSizing)
-  window.frame:RegisterForDrag("LeftButton", "RightButton")
-
-  window:SetLayout("Fill")
-
-  local container = AceGUI:Create(A.NAME.."SimpleGroup")
-  container:SetLayout(FILL_PLUS_STATUS_BAR)
-  window:AddChild(container)
-
-  local top = AceGUI:Create("ScrollFrame")
-  top:SetLayout("Flow")
-  container:AddChild(top)
-
-  local bottom = AceGUI:Create(A.NAME.."SimpleGroup")
-  bottom:SetLayout("Flow")
-  container:AddChild(bottom)
-
-  local statusBar = AceGUI:Create("Label")
-  statusBar:SetFontObject(GameFontHighlightLarge)
-  statusBar:SetText(" ")
-  bottom:AddChild(statusBar)
-
-  -- Add custom functions to window.
-  window._CloseWithSound = function()
-    PlaySound(799)
-    window.frame:Hide()
-  end
-  window._SetStatusText = function(_, text)
-    statusBar:SetText("  "..text)
-  end
-
-  local closeButton = AceGUI:Create("Button")
-  closeButton:SetText(L["button.close.text"])
-  closeButton:SetWidth(104)
-  closeButton:SetCallback("OnClick", window._CloseWithSound)
-  bottom:AddChild(closeButton)
-
-  return top
+    window.frame:SetPropagateKeyboardInput(false)
+    window.frame:SetScript("OnKeyDown", nil)
+    window.frame:SetScript("OnDragStart", nil)
+    window.frame:SetScript("OnDragStop", nil)
+    window.frame:RegisterForDrag()
+    window._CloseWithSound = nil
+    window._SetStatusText = nil
 end

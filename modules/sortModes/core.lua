@@ -86,19 +86,19 @@ function M:OnEnable()
     key = "core",
     name = L["sorter.mode.core"],
     desc = function(t)
-      t:AddLine(format("%s: |n%s.", L["tooltip.right.fixGroups"], L["sorter.mode.core"]), 1,1,0)
+      t:AddLine(format("%s: |n%s.", L["tooltip.right.fixRaid"], L["sorter.mode.core"]), 1,1,0)
       t:AddLine(" ")
       local guildName = GetGuildInfo("player")
       if guildName then
         M:UpdateGuildRanks()
         local rank = M:GetCoreRank()
-        t:AddLine(format(L["gui.fixGroups.help.note.core.1"],
+        t:AddLine(format(L["gui.fixRaid.help.note.core.1"],
             A.util:HighlightGuild(format("<%s>", guildName)),
             A.util:HighlightGuild(M:GetGuildRanks()[rank]),
             rank),
           1,1,1, true)
         t:AddLine(" ")
-        t:AddLine(L["gui.fixGroups.help.note.core.2"], 1,1,1, true)
+        t:AddLine(L["gui.fixRaid.help.note.core.2"], 1,1,1, true)
       else
         t:AddLine(format(L["sorter.print.notInGuild"], "core"), 1,1,1, true)
       end

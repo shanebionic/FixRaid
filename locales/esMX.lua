@@ -4,4 +4,4 @@ if not L then return end
 
 -- Placeholder file - this language is not yet translated.
 -- If you would like to translate, please do!
--- http://wow.curseforge.com/addons/fixgroups/localization/
+-- http://wow.curseforge.com/addons/fixraid/localization/

@@ -21,7 +21,7 @@ function M:OnEnable()
       t:AddLine(last, 1,1,0, true)
     end,
     onBeforeStart = function()
-      A.console:Errorf(M, "this func should never be called - the fgCommand module should be handling this sort mode")
+      A.console:Errorf(M, "this func should never be called - the frCommand module should be handling this sort mode")
       return true
     end,
   })

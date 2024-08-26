@@ -8,7 +8,7 @@ function M:OnEnable()
   A.sortModes:Register({
     key = "nosort",
     name = L["sorter.mode.nosort"],
-    desc = L["gui.fixGroups.help.nosort"],
+    desc = L["gui.fixRaid.help.nosort"],
     getDefaultCompareFunc = function(sortMode, keys, players)
       return function(a, b)
         return a < b

@@ -103,7 +103,7 @@ end
 
 function M:OnEnable()
   -- "/pick" would be better, but that's already an emote.
-  -- "/fg choose <args>" works as well, defined in the console module.
+  -- "/fr choose <args>" works as well, defined in the console module.
   A.console:RegisterSlashCommand({"choose", "chose", "choo", "cho"}, function(args) M:Command("choose", args) end)
   A.console:RegisterSlashCommand({"list"}, function(args) M:Command("list", args) end)
   A.console:RegisterSlashCommand({"listself"}, function(args) M:Command("listself", args) end)
@@ -249,6 +249,7 @@ local function getValidClasses(mode, modeType)
     elseif mode == "mail" then
       c["SHAMAN"] = true
       c["HUNTER"] = true
+	  c["EVOKER"] = true
     elseif mode == "plate" then
       c["WARRIOR"] = true
       c["DEATHKNIGHT"] = true
@@ -267,6 +268,7 @@ local function getValidClasses(mode, modeType)
       c["MAGE"] = true
       c["WARLOCK"] = true
       c["SHAMAN"] = true
+	  c["EVOKER"] = true
     elseif mode == "agility" then
       c["MONK"] = true
       c["DRUID"] = true
@@ -617,6 +619,7 @@ local function buildDispatchTable()
   CLASS_ALIAS["sham"] = "SHAMAN"
   CLASS_ALIAS["shammy"] = "SHAMAN"
   CLASS_ALIAS["dh"] = "DEMONHUNTER"
+  CLASS_ALIAS["evo"] = "EVOKER"
   -- Load non-localized class aliases to the dispatch table.
   for alias, class in pairs(CLASS_ALIAS) do
     d = DISPATCH[strlower(class)]
@@ -626,6 +629,12 @@ local function buildDispatchTable()
   end
   -- Localized class names.
   for class, alias in pairs(LOCALIZED_CLASS_NAMES_MALE) do
+	print("Checking initialization...")
+	print("CLASS_ALIAS:", CLASS_ALIAS)
+	print("DISPATCH:", DISPATCH)
+	print("LOCALIZED_CLASS_NAMES_MALE:", LOCALIZED_CLASS_NAMES_MALE)
+	print("LOCALIZED_CLASS_NAMES_FEMALE:", LOCALIZED_CLASS_NAMES_FEMALE)
+	print("CLASS_SORT_ORDER:", CLASS_SORT_ORDER)
     CLASS_ALIAS[clean(alias)] = class
     DISPATCH[strlower(class)].alias(true, A.util:LocaleLowerNoun(alias))
   end

@@ -146,7 +146,7 @@ end
 
 function M:TestInterop()
   for _, name in ipairs(SUPPORTED_ADDONS_ORDER) do
-    if IsAddOnLoaded(name) and _G[SUPPORTED_ADDONS[name].obj] then
+    if C_AddOns.IsAddOnLoaded(name) and _G[SUPPORTED_ADDONS[name].obj] then
       return format(L["meter.print.usingDataFrom"], HA(A.util:GetAddonNameAndVersion(name)))
     end
   end
@@ -156,7 +156,7 @@ end
 function M:BuildSnapshot(notifyIfNoAddon)
   wipe(R.snapshot)
   for _, name in ipairs(SUPPORTED_ADDONS_ORDER) do
-    if IsAddOnLoaded(name) and _G[SUPPORTED_ADDONS[name].obj] then
+    if C_AddOns.IsAddOnLoaded(name) and _G[SUPPORTED_ADDONS[name].obj] then
       if SUPPORTED_ADDONS[name].getSnapshot() then
         A.console:Printf(L["meter.print.usingDataFrom"], HA(A.util:GetAddonNameAndVersion(name)))
       else
