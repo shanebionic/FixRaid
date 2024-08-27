@@ -1,7 +1,7 @@
 ## Interface: 110002
 ## Title: FixRaid
 ## Author: denalb
-## Version: v1.1.1-alpha
+## Version: v1.1.2-alpha
 ## Notes: Automatically set up groups in raids.
 ## DefaultState: Enabled
 ## SavedVariables: FixRaidDB
