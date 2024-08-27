@@ -51,7 +51,7 @@ local DB_CLEANUP_GUILD_MAX_AGE_DAYS = 21
 local DB_CLEANUP_NONGUILD_MAX_AGE_DAYS = 1.5
 
 local format, ipairs, max, pairs, select, time, tostring = format, ipairs, max, pairs, select, time, tostring
-local GetSpecialization, GetSpecializationInfo, GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit = GetSpecialization, GetSpecializationInfo, C_Spell.GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit
+local GetSpecialization, GetSpecializationInfo, GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit = GetSpecialization, GetSpecializationInfo, GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit
 
 local function cleanDbCache(cache, maxAgeDays)
   local earliest = time() - (60*60*24*maxAgeDays)
@@ -121,6 +121,7 @@ function M:INSPECT_READY(event, guid)
         if A.DEBUG >= 2 then A.console:Debugf(M, "unsolicited inspect ready for %s", name) end
     end
 
+<<<<<<< Updated upstream
     -- Remove from needToInspect and add to sessionCache.
     R.needToInspect[name] = nil
     -- Sanity checks.
@@ -130,6 +131,39 @@ function M:INSPECT_READY(event, guid)
     elseif not R.sessionCache[role] then
         A.console:Errorf(M, "unknown role %s, specId %s for %s!", tostring(role), specId, fullName)
         return
+=======
+  -- Remove from needToInspect and add to sessionCache.
+  R.needToInspect[name] = nil
+  -- Sanity checks.
+  if not role then
+    A.console:Errorf(M, "unknown specId %s for %s!", specId, fullName)
+    return
+  elseif not R.sessionCache[role] then
+    A.console:Errorf(M, "unknown role %s, specId %s for %s!", tostring(role), specId, fullName)
+    return
+  end
+  for r, t in pairs(R.sessionCache) do
+    t[fullName] = (r == role) and true or nil
+  end
+  if A.DEBUG >= 2 then A.console:Debugf(M, "sessionCache add fullName=%s role=%s", fullName, role) end
+
+  -- Add to dbCache.
+  if (role == "melee" or role == "ranged" or role == "support") and not UnitIsUnit(name, "player") then
+    local isGuildmate = UnitIsInMyGuild(name) or R.dbGuildCache.melee[fullName] or R.dbGuildCache.ranged[fullName] or R.dbGuildCache.support[fullName]
+    -- Ensure the player is only in one of the tables.
+    R.dbGuildCache["melee"][fullName] = nil
+    R.dbGuildCache["ranged"][fullName] = nil
+	R.dbGuildCache["support"][fullName] = nil
+    R.dbNonGuildCache["melee"][fullName] = nil
+    R.dbNonGuildCache["ranged"][fullName] = nil
+	R.dbNonGuildCache["support"][fullName] = nil
+    -- Add to appropriate table.
+    local ts = time()
+    if isGuildmate then
+      R.dbGuildCache[role][fullName] = ts
+    else
+      R.dbNonGuildCache[role][fullName] = ts
+>>>>>>> Stashed changes
     end
     for r, t in pairs(R.sessionCache) do
         t[fullName] = (r == role) and true or nil
@@ -168,6 +202,7 @@ function M:FIXGROUPS_PLAYER_LEFT(player)
   end
 end
 
+--[[
 local function guessMeleeOrRangedFromBuffs(name)
   if not BUFF_ROLE then
     BUFF_ROLE = {}
@@ -178,7 +213,7 @@ local function guessMeleeOrRangedFromBuffs(name)
       [251837]  = A.group.ROLE.RANGED,  -- Flask of Endless Fathoms
       [24858]   = A.group.ROLE.RANGED,  -- Moonkin Form
     }) do
-      buff = C_Spell.C_Spell.GetSpellInfo(buff)
+      buff = C_Spell.GetSpellInfo(buff)
       if A.DEBUG >= 1 then A.console:Debugf(M, "buff=%s role=%s", tostring(buff), role) end
       if buff then
         BUFF_ROLE[buff] = role
@@ -195,6 +230,7 @@ local function guessMeleeOrRangedFromBuffs(name)
     end
   end
 end
+--]]
 
 function M:ForgetSession(name)
   local fullName = A.util:NameAndRealm(name)
@@ -205,9 +241,37 @@ function M:ForgetSession(name)
 end
 
 function M:GetDamagerRole(player)
+<<<<<<< Updated upstream
     -- Check for unambiguous classes.
     if player.class and M.CLASS_DAMAGER_ROLE[player.class] then
         return (M.CLASS_DAMAGER_ROLE[player.class] == "melee") and A.group.ROLE.MELEE or A.group.ROLE.RANGED
+=======
+  -- Check for unambiguous classes.
+  if player.class and M.CLASS_DAMAGER_ROLE[player.class] then
+    return (M.CLASS_DAMAGER_ROLE[player.class] == "melee") and A.group.ROLE.MELEE or A.group.ROLE.RANGED
+  end
+
+  -- Sanity check unit name.
+  if player.isUnknown or not player.name or not UnitExists(player.name) then
+    return A.group.ROLE.UNKNOWN
+  end
+
+  -- Ambiguous class, need to check spec.
+  if UnitIsUnit(player.name, "player") then
+    local specId = GetSpecializationInfo(GetSpecialization())
+    if specId then
+      if SPECID_ROLE[specId] == "melee" then
+        return A.group.ROLE.MELEE
+      elseif SPECID_ROLE[specId] == "ranged" then
+        return A.group.ROLE.RANGED
+      elseif SPECID_ROLE[specId] == "tank" then
+        return A.group.ROLE.TANK
+      elseif SPECID_ROLE[specId] == "healer" then
+        return A.group.ROLE.HEALER
+	  elseif SPECID_ROLE[specId] == "support" then
+        return A.group.ROLE.SUPPORT	
+      end
+>>>>>>> Stashed changes
     end
 
     -- Sanity check unit name.
@@ -234,6 +298,7 @@ function M:GetDamagerRole(player)
         return A.group.ROLE.UNKNOWN
     end
 
+<<<<<<< Updated upstream
     -- We're looking at another player. Try the session cache first.
     local fullName = A.util:NameAndRealm(player.name)
     if R.sessionCache.melee[fullName] then
@@ -273,4 +338,25 @@ function M:GetDamagerRole(player)
         if A.DEBUG >= 1 then A.console:Debugf(M, "unknown role: %s", fullName) end
         return A.group.ROLE.UNKNOWN
     end
+=======
+  -- In the meantime, try two fallbacks to get a tentative answer:
+  -- 1) Guess based on the presence of certain buffs; and
+  -- 2) Check the db caches, if we've encountered this player before.
+  --[[
+  local role = guessMeleeOrRangedFromBuffs(player.name)
+  if role then
+    return role
+  elseif R.dbGuildCache.melee[fullName] or R.dbNonGuildCache.melee[fullName] then
+    if A.DEBUG >= 1 then A.console:Debugf(M, "dbCache.melee found %s", fullName) end
+    return A.group.ROLE.MELEE
+  elseif R.dbGuildCache.ranged[fullName] or R.dbNonGuildCache.ranged[fullName] then
+    if A.DEBUG >= 1 then A.console:Debugf(M, "dbCache.ranged found %s", fullName) end
+    return A.group.ROLE.RANGED
+  else
+    -- Oh well.
+    if A.DEBUG >= 1 then A.console:Debugf(M, "unknown role: %s", fullName) end
+    return A.group.ROLE.UNKNOWN
+  end
+  --]]
+>>>>>>> Stashed changes
 end

@@ -23,7 +23,11 @@ M.private = {
   prevRosterArray = {},
   size = 0,
   groupSizes = {0, 0, 0, 0, 0, 0, 0, 0},
+<<<<<<< Updated upstream
   roleCountsTHMRU = {0, 0, 0, 0, 0, 0, 0},
+=======
+  roleCountsTHMRSU = {0, 0, 0, 0, 0, 0},
+>>>>>>> Stashed changes
   roleCountsString = false,
   prevRoleCountsString = false,
   recentlyDropped = {count=0, when=0},
@@ -155,7 +159,7 @@ local function wipeRoster()
     R.groupSizes[g] = 0
   end
   for i = 1, 5 do
-    R.roleCountsTHMRU[i] = 0
+    R.roleCountsTHMRSU[i] = 0
   end
   R.builtUniqueNames = false
   R.prevRoleCountsString = R.roleCountsString
@@ -191,7 +195,7 @@ local function buildSoloRoster(rindex)
       p.isDamager = true
     end
   end
-  R.roleCountsTHMRU[p.role] = R.roleCountsTHMRU[p.role] + 1
+  R.roleCountsTHMRSU[p.role] = R.roleCountsTHMRSU[p.role] + 1
   R.roster[p.name] = p
 end
 
@@ -278,9 +282,9 @@ local function buildRoster()
         end
       end
 
-      if not p.isSitting then
-        R.roleCountsTHMRU[p.role] = R.roleCountsTHMRU[p.role] + 1
-      end
+      --if not p.isSitting then
+        --R.roleCountsTHMRSU[p.role] = R.roleCountsTHMRSU[p.role] + 1
+      --end
       R.roster[p.name] = p
 =======
     wipeRoster()
@@ -313,6 +317,7 @@ local function buildRoster()
             end
             R.groupSizes[p.group] = R.groupSizes[p.group] + 1
 
+<<<<<<< Updated upstream
             -- Role Assignment Logic
             if IsMeleeHealer(p.unitID) then
                 p.role = M.ROLE.HEALER  -- Assign as healer in your existing role structure
@@ -354,6 +359,15 @@ local function buildRoster()
         if A.DEBUG >= 1 then A.console:Debugf(M, "cancelling scheduled ForceBuildRoster") end
         M:CancelTimer(R.rebuildTimer)
         R.rebuildTimer = false
+=======
+  -- Build comp string.
+  R.roleCountsString = tconcat(R.roleCountsTHMRSU, ":")
+
+  -- Schedule rebuild if there are any unknown players.
+  if areAnyUnknown then
+    if not R.rebuildTimer then
+      R.rebuildTimer = M:ScheduleTimer(rebuildTimerDone, DELAY_REBUILD_FOR_UNKNOWN, "unknown")
+>>>>>>> Stashed changes
     end
 end
 
@@ -454,7 +468,7 @@ function M:GetRoleCountsTHMRSU()
 end
 
 function M:GetComp(style)
-  local t, h, m, r, u = unpack(R.roleCountsTHMRU)
+  local t, h, m, r, u = unpack(R.roleCountsTHMRSU)
   return A.util:FormatGroupComp(style, t, h, m, r, u)
 end
 
@@ -471,7 +485,7 @@ function M:GetUnknownNames()
 end
 
 function M:PrintIfThereAreUnknowns()
-  local u = R.roleCountsTHMRU[M.ROLE.UNKNOWN]
+  local u = R.roleCountsTHMRSU[M.ROLE.UNKNOWN]
   if u > 0 then
     local line = format(L["phrase.waitingOnDataFromServerFor"], M:GetUnknownNames())
     line = line.." "..(u == 1 and L["phrase.assumingRangedForNow.singular"] or L["phrase.assumingRangedForNow.plural"])
