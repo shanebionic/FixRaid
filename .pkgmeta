@@ -1,6 +1,7 @@
 package-as: FixRaid
 ignore:
   - .github
+  - .git
   - .gitignore
   - .vscode
   - docs
