@@ -5,7 +5,7 @@ local M = P:NewModule("tmrh", "AceEvent-3.0")
 P.tmrh = M
 
 -- Indexes correspond to A.group.ROLE constants (THMRU).
-local ROLE_KEY = {1, 4, 2, 3, 3}
+local ROLE_KEY = {1, 4, 2, 3, 3, 2, 3}
 local PADDING_PLAYER = {role=5, isDummy=true}
 
 local format, sort, tinsert = format, sort, tinsert

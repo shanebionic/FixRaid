@@ -1,11 +1,11 @@
+--- Tanks > Melee > Melee Healers > Ranged > Healers > Unknown > Support (round robin).
 local A, L = unpack(select(2, ...))
 local P = A.sortModes
 local M = P:NewModule("tmrhms", "AceEvent-3.0")
 P.tmrhms = M
 
--- Updated role priority: Tanks > Melee > Melee Healers > Support > Ranged > Healers > Unknown
-local ROLE_KEY = {1, 3, 7, 4, 2, 6, 5}  -- Adjusted order for round-robin support sorting
-
+-- Indexes correspond to A.group.ROLE constants (THMRMSU - Tanks, Healers, Melee, Ranged, Melee Healers, Support, Unknown).
+local ROLE_KEY = {1, 4, 2, 3, 3, 2, 5}  -- Priorities: lower number = higher priority
 local PADDING_PLAYER = {role=5, isDummy=true}
 
 local format, sort, tinsert = format, sort, tinsert
@@ -21,20 +21,6 @@ local function getDefaultCompareFunc(sortMode, keys, players)
     end
 end
 
--- Round-robin distribution of support roles
-local function distributeSupport(players, groups)
-    local groupIndex = 1
-    for _, playerKey in ipairs(players) do
-        local player = players[playerKey]
-        if player.role == M.ROLE.SUPPORT then
-            -- Assign to the next group in round-robin
-            groups[groupIndex] = groups[groupIndex] or {}
-            tinsert(groups[groupIndex], playerKey)
-            groupIndex = groupIndex % 8 + 1  -- Move to the next group, assuming 8 groups max
-        end
-    end
-end
-
 function M:OnEnable()
     A.sortModes:Register({
         key = "tmrhms",
@@ -45,8 +31,7 @@ function M:OnEnable()
             if sortMode.isIncludingSitting then
                 return
             end
-            
-            -- Insert dummy players for padding
+            -- Insert dummy players for padding to keep the healers in the last group.
             local fixedSize = A.util:GetFixedInstanceSize()
             if fixedSize then
                 local k
@@ -56,12 +41,47 @@ function M:OnEnable()
                     players[k] = PADDING_PLAYER
                 end
             end
-
-            -- Distribute support roles in a round-robin fashion
-            distributeSupport(players, sortMode.groups)
         end,
         onSort = function(sortMode, keys, players)
+            -- Step 1: Sort players by role priority
             sort(keys, getDefaultCompareFunc(sortMode, keys, players))
+            
+            -- Step 2: Assign players to groups
+            local groupSize = 5
+            local supportRoles = {}
+            local groupAssignments = {}
+            local groupCount = 1
+
+            for _, key in ipairs(keys) do
+                local player = players[key]
+                if player.role == A.group.ROLE.SUPPORT then
+                    tinsert(supportRoles, player)  -- Store support roles for round-robin
+                else
+                    groupAssignments[groupCount] = groupAssignments[groupCount] or {}
+                    tinsert(groupAssignments[groupCount], player)
+                    
+                    if #groupAssignments[groupCount] >= groupSize then
+                        groupCount = groupCount + 1
+                    end
+                end
+            end
+
+            -- Step 3: Distribute support roles in round-robin fashion
+            local supportIndex = 1
+            for _, group in ipairs(groupAssignments) do
+                if supportRoles[supportIndex] then
+                    tinsert(group, supportRoles[supportIndex])
+                    supportIndex = supportIndex + 1
+                end
+            end
+
+            -- Step 4: Flatten the groupAssignments back into the keys array
+            keys = {}
+            for _, group in ipairs(groupAssignments) do
+                for _, player in ipairs(group) do
+                    tinsert(keys, player.name)
+                end
+            end
         end,
     })
 end
