@@ -30,3 +30,4 @@ For developers, beta testers, and translators (anyone is welcome to contribute):
 
  * GitHub : https://github.com/shanebionic/FixRaid
 
+Just a test
