@@ -140,6 +140,7 @@ function M:Open()
   newRow(c)
   addButton(true, c, "tmrhs")
   addButton(true, c, "tmrh")
+  addButton(true, c, "tmrhms")  -- New button for TMRHMS sort method
   addButton(true, c, "thmr")
   addButton(true, c, "nosort")
   newRow(c)

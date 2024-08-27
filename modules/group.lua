@@ -23,7 +23,7 @@ M.private = {
   prevRosterArray = {},
   size = 0,
   groupSizes = {0, 0, 0, 0, 0, 0, 0, 0},
-  roleCountsTHMRU = {0, 0, 0, 0, 0},
+  roleCountsTHMRU = {0, 0, 0, 0, 0, 0, 0},
   roleCountsString = false,
   prevRoleCountsString = false,
   recentlyDropped = {count=0, when=0},
@@ -38,8 +38,13 @@ local R = M.private
 local DELAY_REBUILD_FOR_UNKNOWN = 5.0
 local DELAY_REBUILD_FOR_EVENT = 1.0
 
+<<<<<<< Updated upstream
 M.ROLE = {TANK=1, HEALER=2, MELEE=3, RANGED=4, UNKNOWN=5, SUPPORT=6}
 M.ROLE_NAME = {"tank", "healer", "melee", "ranged", "unknown", "support"}
+=======
+M.ROLE = {TANK=1, HEALER=2, MELEE=3, RANGED=4, SUPPORT=5, MELEEHEALER=6, UNKNOWN=7}
+M.ROLE_NAME = {"tank", "healer", "melee", "ranged", "support", "meleehealer", "unknown"}
+>>>>>>> Stashed changes
 M.EXAMPLE_PLAYER1 = {rindex=4, name=L["character.thrall"], rank=1, group=2, class="SHAMAN", zone="Tanaan", unitID="raid4", role=M.ROLE.MELEE, isDamager=true}
 M.EXAMPLE_PLAYER2 = {rindex=18, name=L["character.liadrin"], rank=1, group=5, class="PALADIN", zone="Orgrimmar", unitID="raid18", role=M.ROLE.HEALER}
 M.EXAMPLE_PLAYER3 = {rindex=7, name=L["character.chen"], rank=1, group=5, class="MONK", zone="Tanaan", unitID="raid7", role=M.ROLE.TANK}
@@ -52,6 +57,35 @@ M.EXAMPLE_PLAYER3 = {rindex=7, name=L["character.chen"], rank=1, group=5, class=
 for i = 1, 40 do
   R.rosterArray[i] = {}
   R.prevRosterArray[i] = {}
+end
+
+-- Place the HasTalent and IsMeleeHealer functions here
+local function HasTalent(player, talentID)
+    for tier = 1, 7 do  -- Assume 7 talent tiers
+        for column = 1, 3 do  -- 3 columns per tier
+            local id, name, icon, selected, available = GetTalentInfo(tier, column, 1, false, player)
+            if selected and id == talentID then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function IsMeleeHealer(player)
+    local class = select(2, UnitClass(player))
+
+    if class == "PALADIN" then
+        return true  -- All Holy Paladins are melee healers
+    elseif class == "MONK" then
+        -- Check if the player is a Mistweaver Monk with specific melee talents
+        if HasTalent(player, 197895) or  -- Ancient Teachings ID
+           HasTalent(player, 210802) then  -- Spirit of the Crane ID
+            return true
+        end
+    end
+
+    return false
 end
 
 local format, gsub, ipairs, pairs, select, time, tinsert, tostring, unpack, wipe = format, gsub, ipairs, pairs, select, time, tinsert, tostring, unpack, wipe
@@ -199,6 +233,7 @@ local function findPartyUnitID(name, nextGuess)
 end
 
 local function buildRoster()
+<<<<<<< Updated upstream
   wipeRoster()
   local isRaid = IsInRaid()
   local areAnyUnknown
@@ -247,25 +282,79 @@ local function buildRoster()
         R.roleCountsTHMRU[p.role] = R.roleCountsTHMRU[p.role] + 1
       end
       R.roster[p.name] = p
-    end
-  else
-    R.size = 1
-    buildSoloRoster(1)
-  end
+=======
+    wipeRoster()
+    local isRaid = IsInRaid()
+    local areAnyUnknown
+    if IsInGroup() then
+        R.size = GetNumGroupMembers()
+        local p, _, unitRole
+        local firstSittingGroup = A.util:GetFirstSittingGroup()
+        local nextGuess = 1
+        for i = 1, R.size do
+            p = wipe(R.rosterArray[i])
+            p.rindex = i
+            p.name, p.rank, p.group, _, _, p.class, p.zone = GetRaidRosterInfo(i)
+            if isRaid then
+                p.unitID = "raid"..i
+            else
+                -- The number in party unit IDs (party1, party2, party3, party4)
+                -- does NOT correspond to the GetRaidRosterInfo index.
+                -- We have to check names to get the proper unit ID.
+                p.unitID, nextGuess = findPartyUnitID(p.name, nextGuess)
+            end
+            if not p.name then
+                p.isUnknown = true
+                areAnyUnknown = true
+                p.name = p.unitID
+            end
+            if p.group >= firstSittingGroup then
+                p.isSitting = true
+            end
+            R.groupSizes[p.group] = R.groupSizes[p.group] + 1
 
-  -- Build comp string.
-  R.roleCountsString = tconcat(R.roleCountsTHMRU, ":")
-
-  -- Schedule rebuild if there are any unknown players.
-  if areAnyUnknown then
-    if not R.rebuildTimer then
-      R.rebuildTimer = M:ScheduleTimer(rebuildTimerDone, DELAY_REBUILD_FOR_UNKNOWN, "unknown")
+            -- Role Assignment Logic
+            if IsMeleeHealer(p.unitID) then
+                p.role = M.ROLE.HEALER  -- Assign as healer in your existing role structure
+                p.isMeleeHealer = true  -- You can add this flag if needed for further processing
+            else
+                unitRole = UnitGroupRolesAssigned(p.unitID)
+                if unitRole == "TANK" then
+                    p.role = M.ROLE.TANK
+                elseif unitRole == "HEALER" then
+                    p.role = M.ROLE.HEALER
+                else
+                    p.role = A.damagerRole:GetDamagerRole(p)
+                    if p.role ~= M.ROLE.TANK and p.role ~= M.ROLE.HEALER then
+                        p.isDamager = true
+                    end
+                end
+            end
+            
+            if not p.isSitting then
+                R.roleCountsTHMRU[p.role] = R.roleCountsTHMRU[p.role] + 1
+            end
+            R.roster[p.name] = p
+        end
+    else
+        R.size = 1
+        buildSoloRoster(1)
+>>>>>>> Stashed changes
     end
-  elseif R.rebuildTimer then
-    if A.DEBUG >= 1 then A.console:Debugf(M, "cancelling scheduled ForceBuildRoster") end
-    M:CancelTimer(R.rebuildTimer)
-    R.rebuildTimer = false
-  end
+
+    -- Build comp string.
+    R.roleCountsString = tconcat(R.roleCountsTHMRU, ":")
+
+    -- Schedule rebuild if there are any unknown players.
+    if areAnyUnknown then
+        if not R.rebuildTimer then
+            R.rebuildTimer = M:ScheduleTimer(rebuildTimerDone, DELAY_REBUILD_FOR_UNKNOWN, "unknown")
+        end
+    elseif R.rebuildTimer then
+        if A.DEBUG >= 1 then A.console:Debugf(M, "cancelling scheduled ForceBuildRoster") end
+        M:CancelTimer(R.rebuildTimer)
+        R.rebuildTimer = false
+    end
 end
 
 function M:BuildUniqueNames()

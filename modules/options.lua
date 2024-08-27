@@ -52,6 +52,7 @@ M.private = {
     },
   },
 }
+A.db = LibStub("AceDB-3.0"):New("FixRaidDB", M.private.defaults, true)
 local R = M.private
 local H, HA, HD = A.util.Highlight, A.util.HighlightAddon, A.util.HighlightDim
 
@@ -225,6 +226,7 @@ R.optionsTable.args.sort.args = {
     width = "double",
     style = "dropdown",
     values = {
+<<<<<<< Updated upstream
       [1] = format("%s > %s > %s > %s (1 aug per group)", L["word.tank.plural"], L["word.melee.plural"], L["word.ranged.plural"], L["word.healer.plural"]),
 	  [2] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.melee.plural"], L["word.ranged.plural"], L["word.healer.plural"]),
       [3] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.healer.plural"], L["word.melee.plural"], L["word.ranged.plural"]),
@@ -244,6 +246,27 @@ R.optionsTable.args.sort.args = {
 	  elseif v == 3 then A.options.sortMode = "thmr"
       else A.options.sortMode = "tmrhs"
       end
+=======
+        [1] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.melee.plural"], L["word.ranged.plural"], L["word.healer.plural"]),
+        [2] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.healer.plural"], L["word.melee.plural"], L["word.ranged.plural"]),
+        [3] = format("%s > %s > %s > %s > %s > %s", L["word.tank.plural"], L["word.melee.plural"], L["word.support.plural"], L["word.meleehealer.plural"], L["word.ranged.plural"], L["word.healer.plural"]),
+        [4] = L["options.value.sortMode.nosort"],
+    },
+    get = function(i)
+        if A.options.sortMode == "nosort" then return 4
+        elseif A.options.sortMode == "thmr" then return 2
+        elseif A.options.sortMode == "tmrhms" then return 3
+        else return 1
+        end
+    end,
+    set = function(i,v)
+        A.sorter:Stop()
+        if v == 4 then A.options.sortMode = "nosort"
+        elseif v == 3 then A.options.sortMode = "tmrhms"
+        elseif v == 2 then A.options.sortMode = "thmr"
+        else A.options.sortMode = "tmrh"
+        end
+>>>>>>> Stashed changes
     end,
   },
   damageMeterAddonDesc = {
@@ -726,7 +749,7 @@ R.optionsTable.args.ui.args = {
 }
 
 function M:OnInitialize()
-  A.db = LibStub("AceDB-3.0"):New("FixRaidDB", R.defaults, true)
+  --A.db = LibStub("AceDB-3.0"):New("FixRaidDB", R.defaults, true)
   -- Intentionally overwriting the module reference.
   -- Can always do A:GetModule("options") if needed.
   A.options = A.db.profile.options

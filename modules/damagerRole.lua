@@ -6,7 +6,7 @@ local M = A:NewModule("damagerRole", "AceEvent-3.0", "AceTimer-3.0")
 A.damagerRole = M
 M.private = {
   needToInspect = {},
-  sessionCache = {melee={}, ranged={}, tank={}, healer={}},
+  sessionCache = {melee={}, ranged={}, tank={}, healer={}, support={}},
   dbGuildCache = false,
   dbNonGuildCache = false,
   dbCleanedUp = false,
@@ -69,88 +69,97 @@ local function cleanDbCache(cache, maxAgeDays)
 end
 
 function M:OnEnable()
-  M:RegisterEvent("INSPECT_READY")
-  M:RegisterMessage("FIXGROUPS_PLAYER_LEFT")
-  -- Set local references to dbCaches, creating them if they don't exist.
-  if not A.db.faction.damagerRoleGuildCache then
-    A.db.faction.damagerRoleGuildCache = {melee={}, ranged={}}
-  end
-  R.dbGuildCache = A.db.faction.damagerRoleGuildCache
-  if not A.db.faction.damagerRoleNonGuildCache then
-    A.db.faction.damagerRoleNonGuildCache = {melee={}, ranged={}}
-  end
-  R.dbNonGuildCache = A.db.faction.damagerRoleNonGuildCache
-  if not R.dbCleanedUp and not InCombatLockdown() then
-    R.dbCleanedUp = M:ScheduleTimer(function()
-      R.dbCleanedUp = true
-      if InCombatLockdown() or A.sorter:IsProcessing() then
-        -- Don't worry about trying to reschedule the timer. DB cleanup is
-        -- very low priority. Another session will get it done eventually.
+    if not A.db then
+        A.console:Error("A.db is not initialized in damagerRole.lua")
         return
-      end
-      cleanDbCache(R.dbGuildCache, DB_CLEANUP_GUILD_MAX_AGE_DAYS)
-      cleanDbCache(R.dbNonGuildCache, DB_CLEANUP_NONGUILD_MAX_AGE_DAYS)
-      -- Cleanup from legacy version of addon.
-      A.db.faction.dpsRoleCache = nil
-    end, DELAY_DB_CLEANUP)
-  end
+    end
+    M:RegisterEvent("INSPECT_READY")
+    M:RegisterMessage("FIXGROUPS_PLAYER_LEFT")
+    -- Set local references to dbCaches, creating them if they don't exist.
+    if not A.db.faction.damagerRoleGuildCache then
+        A.db.faction.damagerRoleGuildCache = {melee={}, ranged={}, support={}}
+    end
+    R.dbGuildCache = A.db.faction.damagerRoleGuildCache
+    if not A.db.faction.damagerRoleNonGuildCache then
+        A.db.faction.damagerRoleNonGuildCache = {melee={}, ranged={}, support={}}
+    end
+    R.dbNonGuildCache = A.db.faction.damagerRoleNonGuildCache
+
+    -- Clean up old cache entries if needed
+    if not R.dbCleanedUp and not InCombatLockdown() then
+        R.dbCleanedUp = M:ScheduleTimer(function()
+            R.dbCleanedUp = true
+            if InCombatLockdown() or A.sorter:IsProcessing() then
+                -- Don't worry about trying to reschedule the timer. DB cleanup is
+                -- very low priority. Another session will get it done eventually.
+                return
+            end
+            cleanDbCache(R.dbGuildCache, DB_CLEANUP_GUILD_MAX_AGE_DAYS)
+            cleanDbCache(R.dbNonGuildCache, DB_CLEANUP_NONGUILD_MAX_AGE_DAYS)
+            -- Cleanup from legacy version of addon.
+            A.db.faction.dpsRoleCache = nil
+        end, DELAY_DB_CLEANUP)
+    end
 end
 
 function M:INSPECT_READY(event, guid)
-  local isValid, name, specId = A.inspect:GetInspectData(guid)
-  if not isValid then
-    return
-  end
-  local fullName = R.needToInspect[name]
-  local role = SPECID_ROLE[specId]
-  if not fullName then
-    -- We didn't request this inspect, but let's see if we can make use of it.
-    if not role or role == "tank" or role == "healer" or not UnitExists(name) then
-      return
+    local isValid, name, specId = A.inspect:GetInspectData(guid)
+    if not isValid then
+        return
     end
-    fullName = A.util:NameAndRealm(name)
+    local fullName = R.needToInspect[name]
+    local role = SPECID_ROLE[specId]
     if not fullName then
-      return
+        -- We didn't request this inspect, but let's see if we can make use of it.
+        if not role or role == "tank" or role == "healer" or not UnitExists(name) then
+            return
+        end
+        fullName = A.util:NameAndRealm(name)
+        if not fullName then
+            return
+        end
+        if A.DEBUG >= 2 then A.console:Debugf(M, "unsolicited inspect ready for %s", name) end
     end
-    if A.DEBUG >= 2 then A.console:Debugf(M, "unsolicited inspect ready for %s", name) end
-  end
 
-  -- Remove from needToInspect and add to sessionCache.
-  R.needToInspect[name] = nil
-  -- Sanity checks.
-  if not role then
-    A.console:Errorf(M, "unknown specId %s for %s!", specId, fullName)
-    return
-  elseif not R.sessionCache[role] then
-    A.console:Errorf(M, "unknown role %s, specId %s for %s!", tostring(role), specId, fullName)
-    return
-  end
-  for r, t in pairs(R.sessionCache) do
-    t[fullName] = (r == role) and true or nil
-  end
-  if A.DEBUG >= 2 then A.console:Debugf(M, "sessionCache add fullName=%s role=%s", fullName, role) end
-
-  -- Add to dbCache.
-  if (role == "melee" or role == "ranged") and not UnitIsUnit(name, "player") then
-    local isGuildmate = UnitIsInMyGuild(name) or R.dbGuildCache.melee[fullName] or R.dbGuildCache.ranged[fullName]
-    -- Ensure the player is only in one of the tables.
-    R.dbGuildCache["melee"][fullName] = nil
-    R.dbGuildCache["ranged"][fullName] = nil
-    R.dbNonGuildCache["melee"][fullName] = nil
-    R.dbNonGuildCache["ranged"][fullName] = nil
-    -- Add to appropriate table.
-    local ts = time()
-    if isGuildmate then
-      R.dbGuildCache[role][fullName] = ts
-    else
-      R.dbNonGuildCache[role][fullName] = ts
+    -- Remove from needToInspect and add to sessionCache.
+    R.needToInspect[name] = nil
+    -- Sanity checks.
+    if not role then
+        A.console:Errorf(M, "unknown specId %s for %s!", specId, fullName)
+        return
+    elseif not R.sessionCache[role] then
+        A.console:Errorf(M, "unknown role %s, specId %s for %s!", tostring(role), specId, fullName)
+        return
     end
-    if A.DEBUG >= 1 then A.console:Debugf(M, "dbCache add fullName=%s role=%s isGuildmate=%s", fullName, role, tostring(isGuildmate)) end
-  end
+    for r, t in pairs(R.sessionCache) do
+        t[fullName] = (r == role) and true or nil
+    end
+    if A.DEBUG >= 2 then A.console:Debugf(M, "sessionCache add fullName=%s role=%s", fullName, role) end
 
-  -- Rebuild roster.
-  A.group:ForceBuildRoster(M, event)
+    -- Add to dbCache.
+    if (role == "melee" or role == "ranged" or role == "support") and not UnitIsUnit(name, "player") then
+        local isGuildmate = UnitIsInMyGuild(name) or R.dbGuildCache.melee[fullName] or R.dbGuildCache.ranged[fullName] or R.dbGuildCache.support[fullName]
+        -- Ensure the player is only in one of the tables.
+        R.dbGuildCache["melee"][fullName] = nil
+        R.dbGuildCache["ranged"][fullName] = nil
+        R.dbGuildCache["support"][fullName] = nil
+        R.dbNonGuildCache["melee"][fullName] = nil
+        R.dbNonGuildCache["ranged"][fullName] = nil
+        R.dbNonGuildCache["support"][fullName] = nil
+        -- Add to appropriate table.
+        local ts = time()
+        if isGuildmate then
+            R.dbGuildCache[role][fullName] = ts
+        else
+            R.dbNonGuildCache[role][fullName] = ts
+        end
+        if A.DEBUG >= 1 then A.console:Debugf(M, "dbCache add fullName=%s role=%s isGuildmate=%s", fullName, role, tostring(isGuildmate)) end
+    end
+
+    -- Rebuild roster.
+    A.group:ForceBuildRoster(M, event)
 end
+
 
 function M:FIXGROUPS_PLAYER_LEFT(player)
   if not player.isUnknown and player.name then
@@ -196,65 +205,72 @@ function M:ForgetSession(name)
 end
 
 function M:GetDamagerRole(player)
-  -- Check for unambiguous classes.
-  if player.class and M.CLASS_DAMAGER_ROLE[player.class] then
-    return (M.CLASS_DAMAGER_ROLE[player.class] == "melee") and A.group.ROLE.MELEE or A.group.ROLE.RANGED
-  end
-
-  -- Sanity check unit name.
-  if player.isUnknown or not player.name or not UnitExists(player.name) then
-    return A.group.ROLE.UNKNOWN
-  end
-
-  -- Ambiguous class, need to check spec.
-  if UnitIsUnit(player.name, "player") then
-    local specId = GetSpecializationInfo(GetSpecialization())
-    if specId then
-      if SPECID_ROLE[specId] == "melee" then
-        return A.group.ROLE.MELEE
-      elseif SPECID_ROLE[specId] == "ranged" then
-        return A.group.ROLE.RANGED
-      elseif SPECID_ROLE[specId] == "tank" then
-        return A.group.ROLE.TANK
-      elseif SPECID_ROLE[specId] == "healer" then
-        return A.group.ROLE.HEALER
-      end
+    -- Check for unambiguous classes.
+    if player.class and M.CLASS_DAMAGER_ROLE[player.class] then
+        return (M.CLASS_DAMAGER_ROLE[player.class] == "melee") and A.group.ROLE.MELEE or A.group.ROLE.RANGED
     end
-    return A.group.ROLE.UNKNOWN
-  end
 
-  -- We're looking at another player. Try the session cache first.
-  local fullName = A.util:NameAndRealm(player.name)
-  if R.sessionCache.melee[fullName] then
-    return A.group.ROLE.MELEE
-  elseif R.sessionCache.ranged[fullName] then
-    return A.group.ROLE.RANGED
-  elseif R.sessionCache.tank[fullName] then
-    return A.group.ROLE.TANK
-  elseif R.sessionCache.healer[fullName] then
-    return A.group.ROLE.HEALER
-  end
+    -- Sanity check unit name.
+    if player.isUnknown or not player.name or not UnitExists(player.name) then
+        return A.group.ROLE.UNKNOWN
+    end
 
-  -- Okay, the session cache failed. Add the player to the inspection request
-  -- queue so we can get their true specID.
-  R.needToInspect[player.name] = fullName
-  A.inspect:Request(player.name)
+    -- Ambiguous class, need to check spec.
+    if UnitIsUnit(player.name, "player") then
+        local specId = GetSpecializationInfo(GetSpecialization())
+        if specId then
+            if SPECID_ROLE[specId] == "melee" then
+                return A.group.ROLE.MELEE
+            elseif SPECID_ROLE[specId] == "ranged" then
+                return A.group.ROLE.RANGED
+            elseif SPECID_ROLE[specId] == "support" then
+                return A.group.ROLE.SUPPORT
+            elseif SPECID_ROLE[specId] == "tank" then
+                return A.group.ROLE.TANK
+            elseif SPECID_ROLE[specId] == "healer" then
+                return A.group.ROLE.HEALER
+            end
+        end
+        return A.group.ROLE.UNKNOWN
+    end
 
-  -- In the meantime, try two fallbacks to get a tentative answer:
-  -- 1) Guess based on the presence of certain buffs; and
-  -- 2) Check the db caches, if we've encountered this player before.
-  local role = guessMeleeOrRangedFromBuffs(player.name)
-  if role then
-    return role
-  elseif R.dbGuildCache.melee[fullName] or R.dbNonGuildCache.melee[fullName] then
-    if A.DEBUG >= 1 then A.console:Debugf(M, "dbCache.melee found %s", fullName) end
-    return A.group.ROLE.MELEE
-  elseif R.dbGuildCache.ranged[fullName] or R.dbNonGuildCache.ranged[fullName] then
-    if A.DEBUG >= 1 then A.console:Debugf(M, "dbCache.ranged found %s", fullName) end
-    return A.group.ROLE.RANGED
-  else
-    -- Oh well.
-    if A.DEBUG >= 1 then A.console:Debugf(M, "unknown role: %s", fullName) end
-    return A.group.ROLE.UNKNOWN
-  end
+    -- We're looking at another player. Try the session cache first.
+    local fullName = A.util:NameAndRealm(player.name)
+    if R.sessionCache.melee[fullName] then
+        return A.group.ROLE.MELEE
+    elseif R.sessionCache.ranged[fullName] then
+        return A.group.ROLE.RANGED
+    elseif R.sessionCache.support[fullName] then
+        return A.group.ROLE.SUPPORT
+    elseif R.sessionCache.tank[fullName] then
+        return A.group.ROLE.TANK
+    elseif R.sessionCache.healer[fullName] then
+        return A.group.ROLE.HEALER
+    end
+
+    -- Okay, the session cache failed. Add the player to the inspection request
+    -- queue so we can get their true specID.
+    R.needToInspect[player.name] = fullName
+    A.inspect:Request(player.name)
+
+    -- In the meantime, try two fallbacks to get a tentative answer:
+    -- 1) Guess based on the presence of certain buffs; and
+    -- 2) Check the db caches, if we've encountered this player before.
+    local role = guessMeleeOrRangedFromBuffs(player.name)
+    if role then
+        return role
+    elseif R.dbGuildCache.melee[fullName] or R.dbNonGuildCache.melee[fullName] then
+        if A.DEBUG >= 1 then A.console:Debugf(M, "dbCache.melee found %s", fullName) end
+        return A.group.ROLE.MELEE
+    elseif R.dbGuildCache.ranged[fullName] or R.dbNonGuildCache.ranged[fullName] then
+        if A.DEBUG >= 1 then A.console:Debugf(M, "dbCache.ranged found %s", fullName) end
+        return A.group.ROLE.RANGED
+    elseif R.dbGuildCache.support[fullName] or R.dbNonGuildCache.support[fullName] then
+        if A.DEBUG >= 1 then A.console:Debugf(M, "dbCache.support found %s", fullName) end
+        return A.group.ROLE.SUPPORT
+    else
+        -- Oh well.
+        if A.DEBUG >= 1 then A.console:Debugf(M, "unknown role: %s", fullName) end
+        return A.group.ROLE.UNKNOWN
+    end
 end

@@ -196,49 +196,53 @@ function M:GetGroupChannel()
   return IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "PARTY"
 end
 
-local function compMRU(m, r, u)
-  if u > 0 then
-    return format("%d+%d+%d", m, r, u)
-  else
-    return format("%d+%d", m, r)
-  end
+local function compMRUS(m, r, s, u)
+    if u > 0 then
+        return format("%d+%d+%d+%d", m, r, s, u)
+    elseif s > 0 then
+        return format("%d+%d+%d", m, r, s)
+    else
+        return format("%d+%d", m, r)
+    end
 end
 
-function M:FormatGroupComp(style, t, h, m, r, u, isInRaid)
+function M:FormatGroupComp(style, t, h, m, r, s, u, isInRaid)
+  u = tonumber(u) or 0  -- Ensure `u` is always a number
   if style == M.GROUP_COMP_STYLE.ICONS_FULL then
     return format("%d%s %d%s %d%s%s",
       t, M:GetRoleIcon("TANK"),
       h, M:GetRoleIcon("HEALER"),
-      m+r+u, M:GetRoleIcon("DAMAGER"),
-      M:HighlightDim(compMRU(m, r, u)))
+      m+r+s+u, M:GetRoleIcon("DAMAGER"),
+      M:HighlightDim(compMRUS(m, r, s, u)))
   elseif style == M.GROUP_COMP_STYLE.ICONS_SHORT then
     return format("%d%s %d%s %d%s",
       t, M:GetRoleIcon("TANK"),
       h, M:GetRoleIcon("HEALER"),
-      m+r+u, M:GetRoleIcon("DAMAGER"))
+      m+r+s+u, M:GetRoleIcon("DAMAGER"))
   elseif style == M.GROUP_COMP_STYLE.GROUP_TYPE_FULL then
     return format("%s: %s",
       (isInRaid or IsInRaid()) and L["word.raid"] or L["word.party"],
-      M:Highlight(format("%d/%d/%d (%s)", t, h, m+r+u, compMRU(m, r, u))))
+      M:Highlight(format("%d/%d/%d (%s)", t, h, m+r+s+u, compMRUS(m, r, s, u))))
   elseif style == M.GROUP_COMP_STYLE.GROUP_TYPE_SHORT then
     return format("%s: %s",
       (isInRaid or IsInRaid()) and L["word.raid"] or L["word.party"],
-      M:Highlight(format("%d/%d/%d", t, h, m+r+u)))
+      M:Highlight(format("%d/%d/%d", t, h, m+r+s+u)))
   elseif style == M.GROUP_COMP_STYLE.TEXT_FULL then
-    return format("%d/%d/%d (%s)", t, h, m+r+u, compMRU(m, r, u))
+    return format("%d/%d/%d (%s)", t, h, m+r+s+u, compMRUS(m, r, s, u))
   elseif style == M.GROUP_COMP_STYLE.TEXT_SHORT then
-    return format("%d/%d/%d", t, h, m+r+u)
+    return format("%d/%d/%d", t, h, m+r+s+u)
   elseif style == M.GROUP_COMP_STYLE.VERBOSE then
     local unknown = (u > 0) and format(", %d %s", u, ((u == 1) and L["word.unknown.singular"] or L["word.unknown.plural"])) or ""
-    return format("%d %s / %d %s / %d %s (%d %s, %d %s%s)",
+    return format("%d %s / %d %s / %d %s (%d %s, %d %s, %d %s%s)",
       t,      ((t == 1)     and L["word.tank.singular"]     or L["word.tank.plural"]    ),
       h,      ((h == 1)     and L["word.healer.singular"]   or L["word.healer.plural"]  ),
-      m+r+u,  ((m+r+u == 1) and L["word.damager.singular"]  or L["word.damager.plural"] ),
+      m+r+s+u,  ((m+r+s+u == 1) and L["word.damager.singular"]  or L["word.damager.plural"] ),
       m,      ((m == 1)     and L["word.melee.singular"]    or L["word.melee.plural"]   ),
       r,      ((r == 1)     and L["word.ranged.singular"]   or L["word.ranged.plural"]  ),
+      s,      ((s == 1)     and L["word.support.singular"]  or L["word.support.plural"] ),
       unknown)
   else
-    return M:FormatGroupComp(M.GROUP_COMP_STYLE.ICONS_FULL, t, h, m, r, u)
+    return M:FormatGroupComp(M.GROUP_COMP_STYLE.ICONS_FULL, t, h, m, r, s, u)
   end
 end
 
@@ -277,18 +281,26 @@ function M:UnitNameWithColor(unitID)
 end
 
 function M:NameAndRealm(name)
-  if strfind(name, "%-") then
-    return name
-  end
-  local realm = select(2, UnitFullName(name))
-  if not realm then
-    realm = gsub(GetRealmName(), "[ %-]", "")
-  end
-  return realm and (name.."-"..realm) or name
+    -- Use UnitFullName to get the player's full name and realm
+    local playerName, playerRealm = UnitFullName(name)
+    
+    -- If no realm is provided, use the player's current realm
+    if not playerRealm or playerRealm == "" then
+        playerRealm = gsub(GetRealmName(), "[ %-]", "")
+    end
+
+    -- Return the full name with the realm
+    return playerName and (playerName .. "-" .. playerRealm) or name
 end
 
 function M:StripRealm(name)
-  return strsplit("-", name, 2)
+    if not name or type(name) ~= "string" then
+        return nil  -- Handle with a default value if needed
+    end
+    
+    -- Use pattern matching to strip the realm and return only the name
+    local playerName = name:match("^(.-)%-") or name
+    return playerName
 end
 
 function A.util:IsAugmentationEvoker(unit)
