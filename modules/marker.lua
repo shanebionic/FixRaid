@@ -64,7 +64,7 @@ function M:FixRaid(isRequestFromAssist)
   for i = 1, GetNumGroupMembers() do
     name, rank, subgroup, _, _, _, _, online, _, raidRole, isML = GetRaidRosterInfo(i)
     if A.util:IsLeader() and A.options.fixOfflineML and isML and not online then
-      SetLootMethod("master", "player")
+      SetLootMethod("master", "player", 4)
     end
     if subgroup >= 1 and subgroup < A.util:GetFirstSittingGroup() then
       name = name or "Unknown"

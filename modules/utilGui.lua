@@ -22,7 +22,7 @@ local FILL_PLUS_STATUS_BAR = A.NAME.."FillPlusStatusBar"
 local DELAY_OPEN_RAID_TAB = 0.01
 local AceGUI = LibStub("AceGUI-3.0")
 
-local ChatFrame_OpenChat, GameFontHighlightLarge, GetCurrentKeyBoardFocus, GetBindingFromClick, InterfaceOptionsFrame, InterfaceOptionsFrame_OpenToCategory, IsAddOnLoaded, OpenFriendsFrame, PlaySound, ToggleFriendsFrame = ChatFrame_OpenChat, GameFontHighlightLarge, GetCurrentKeyBoardFocus, GetBindingFromClick, InterfaceOptionsFrame, InterfaceOptionsFrame_OpenToCategory, IsAddOnLoaded, OpenFriendsFrame, PlaySound, ToggleFriendsFrame
+local ChatFrame_OpenChat, GameFontHighlightLarge, GetCurrentKeyBoardFocus, GetBindingFromClick, InterfaceOptionsFrame, InterfaceOptionsFrame_OpenToCategory, IsAddOnLoaded, OpenFriendsFrame, PlaySound, ToggleFriendsFrame = ChatFrame_OpenChat, GameFontHighlightLarge, GetCurrentKeyBoardFocus, GetBindingFromClick, InterfaceOptionsFrame, InterfaceOptionsFrame_OpenToCategory, C_AddOns.IsAddOnLoaded, OpenFriendsFrame, PlaySound, ToggleFriendsFrame
 local format, max, pairs, strmatch = format, max, pairs, strmatch
 
 -- GLOBALS: ElvUI

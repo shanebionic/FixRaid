@@ -11,7 +11,7 @@ local H, HA, HD = A.util.Highlight, A.util.HighlightAddon, A.util.HighlightDim
 local NOT_IN_GROUP = HD(L["dataBroker.groupComp.notInGroup"])
 
 local format, tostring = format, tostring
-local IsAddOnLoaded, IsInGroup, IsInRaid, IsShiftKeyDown = IsAddOnLoaded, IsInGroup, IsInRaid, IsShiftKeyDown
+local IsAddOnLoaded, IsInGroup, IsInRaid, IsShiftKeyDown = C_AddOns.IsAddOnLoaded, IsInGroup, IsInRaid, IsShiftKeyDown
 -- GLOBALS: C_LFGList, LibStub
 
 local function groupCompOnClick(frame, button)

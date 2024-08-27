@@ -51,7 +51,7 @@ local DB_CLEANUP_GUILD_MAX_AGE_DAYS = 21
 local DB_CLEANUP_NONGUILD_MAX_AGE_DAYS = 1.5
 
 local format, ipairs, max, pairs, select, time, tostring = format, ipairs, max, pairs, select, time, tostring
-local GetSpecialization, GetSpecializationInfo, GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit = GetSpecialization, GetSpecializationInfo, GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit
+local GetSpecialization, GetSpecializationInfo, GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit = GetSpecialization, GetSpecializationInfo, C_Spell.GetSpellInfo, InCombatLockdown, C_UnitAuras.GetBuffDataByIndex, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit
 
 local function cleanDbCache(cache, maxAgeDays)
   local earliest = time() - (60*60*24*maxAgeDays)
