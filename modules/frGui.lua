@@ -138,7 +138,6 @@ function M:Open()
   addButton(true, c, "skip1")
   addButton(true, c, "skip2")
   newRow(c)
-  addButton(true, c, "tmrhs")
   addButton(true, c, "tmrh")
   addButton(true, c, "tmrhms")  -- New button for TMRHMS sort method
   addButton(true, c, "thmr")

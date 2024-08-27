@@ -36,7 +36,7 @@ local ChatTypeInfo, GetAddOnMetadata, GetBindingKey, GetInstanceInfo, GetRealmNa
 local LE_PARTY_CATEGORY_INSTANCE, RAID_CLASS_COLORS = LE_PARTY_CATEGORY_INSTANCE, RAID_CLASS_COLORS
 
 local LOCALE_SERIAL_COMMA =  (GetLocale() == "enUS") and "," or ""
-local LOCALE_UPPERCASE_NOUNS = (GetLocale() == "enUS")
+local LOCALE_UPPERCASE_NOUNS = (GetLocale() == "deDE")
 -- Lazily built.
 local WATCH_CHAT_KEYWORDS, WATCH_CHAT_KEYWORDS_LIST = false, false
 
@@ -179,7 +179,7 @@ function M:GetFixedInstanceSize()
 end
 
 function M:GetAddonNameAndVersion(name)
-  local v = GetAddOnMetadata(name, "Version")
+  local v = C_AddOns.GetAddOnMetadata(name, "Version")
   if v then
     if strmatch(v, "v.*") then
       return name.." "..v
@@ -196,7 +196,6 @@ function M:GetGroupChannel()
   return IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "PARTY"
 end
 
-<<<<<<< Updated upstream
 local function compMRUS(m, r, s, u)
     if u > 0 then
         return format("%d+%d+%d+%d", m, r, s, u)
@@ -209,35 +208,12 @@ end
 
 function M:FormatGroupComp(style, t, h, m, r, s, u, isInRaid)
   u = tonumber(u) or 0  -- Ensure `u` is always a number
-=======
-local function compMRSU(m, r, s, u)
-  if s > 0 and u > 0 then
-    return format("%d+%d+%d+%d", m, r, s, u)
-  elseif s > 0 then
-    return format("%d+%d+%d", m, r, s)
-  elseif u > 0 then
-    return format("%d+%d+%d", m, r, u)
-  else
-    return format("%d+%d", m, r)
-  end
-end
-
-function M:FormatGroupComp(style, t, h, m, r, s, u, isInRaid)
-  -- Ensure 's' and 'u' are numbers
-  s = (type(s) == "number") and s or 0
-  u = (type(u) == "number") and u or 0
-
->>>>>>> Stashed changes
   if style == M.GROUP_COMP_STYLE.ICONS_FULL then
     return format("%d%s %d%s %d%s%s",
       t, M:GetRoleIcon("TANK"),
       h, M:GetRoleIcon("HEALER"),
       m+r+s+u, M:GetRoleIcon("DAMAGER"),
-<<<<<<< Updated upstream
       M:HighlightDim(compMRUS(m, r, s, u)))
-=======
-      M:HighlightDim(compMRSU(m, r, s, u)))
->>>>>>> Stashed changes
   elseif style == M.GROUP_COMP_STYLE.ICONS_SHORT then
     return format("%d%s %d%s %d%s",
       t, M:GetRoleIcon("TANK"),
@@ -246,21 +222,13 @@ function M:FormatGroupComp(style, t, h, m, r, s, u, isInRaid)
   elseif style == M.GROUP_COMP_STYLE.GROUP_TYPE_FULL then
     return format("%s: %s",
       (isInRaid or IsInRaid()) and L["word.raid"] or L["word.party"],
-<<<<<<< Updated upstream
       M:Highlight(format("%d/%d/%d (%s)", t, h, m+r+s+u, compMRUS(m, r, s, u))))
-=======
-      M:Highlight(format("%d/%d/%d (%s)", t, h, m+r+s+u, compMRSU(m, r, s, u))))
->>>>>>> Stashed changes
   elseif style == M.GROUP_COMP_STYLE.GROUP_TYPE_SHORT then
     return format("%s: %s",
       (isInRaid or IsInRaid()) and L["word.raid"] or L["word.party"],
       M:Highlight(format("%d/%d/%d", t, h, m+r+s+u)))
   elseif style == M.GROUP_COMP_STYLE.TEXT_FULL then
-<<<<<<< Updated upstream
     return format("%d/%d/%d (%s)", t, h, m+r+s+u, compMRUS(m, r, s, u))
-=======
-    return format("%d/%d/%d (%s)", t, h, m+r+s+u, compMRSU(m, r, s, u))
->>>>>>> Stashed changes
   elseif style == M.GROUP_COMP_STYLE.TEXT_SHORT then
     return format("%d/%d/%d", t, h, m+r+s+u)
   elseif style == M.GROUP_COMP_STYLE.VERBOSE then
@@ -271,17 +239,12 @@ function M:FormatGroupComp(style, t, h, m, r, s, u, isInRaid)
       m+r+s+u,  ((m+r+s+u == 1) and L["word.damager.singular"]  or L["word.damager.plural"] ),
       m,      ((m == 1)     and L["word.melee.singular"]    or L["word.melee.plural"]   ),
       r,      ((r == 1)     and L["word.ranged.singular"]   or L["word.ranged.plural"]  ),
-<<<<<<< Updated upstream
       s,      ((s == 1)     and L["word.support.singular"]  or L["word.support.plural"] ),
-=======
-      s,      ((s == 1)     and L["word.support.singular"]  or L["word.support.plural"]  ),
->>>>>>> Stashed changes
       unknown)
   else
     return M:FormatGroupComp(M.GROUP_COMP_STYLE.ICONS_FULL, t, h, m, r, s, u)
   end
 end
-
 
 function M:Highlight(text)
   return "|cff1784d1"..(text or self).."|r"
@@ -338,13 +301,6 @@ function M:StripRealm(name)
     -- Use pattern matching to strip the realm and return only the name
     local playerName = name:match("^(.-)%-") or name
     return playerName
-end
-
-function A.util:IsAugmentationEvoker(unit)
-    local _, class = UnitClass(unit)
-    local specID = GetInspectSpecialization(unit)
-    local AUGMENTATION_SPEC_ID = 1478 -- Replace with actual spec ID
-    return class == "EVOKER" and specID == AUGMENTATION_SPEC_ID
 end
 
 function M:BlankInline(height, width)

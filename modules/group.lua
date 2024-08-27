@@ -23,11 +23,7 @@ M.private = {
   prevRosterArray = {},
   size = 0,
   groupSizes = {0, 0, 0, 0, 0, 0, 0, 0},
-<<<<<<< Updated upstream
   roleCountsTHMRU = {0, 0, 0, 0, 0, 0, 0},
-=======
-  roleCountsTHMRSU = {0, 0, 0, 0, 0, 0},
->>>>>>> Stashed changes
   roleCountsString = false,
   prevRoleCountsString = false,
   recentlyDropped = {count=0, when=0},
@@ -42,13 +38,8 @@ local R = M.private
 local DELAY_REBUILD_FOR_UNKNOWN = 5.0
 local DELAY_REBUILD_FOR_EVENT = 1.0
 
-<<<<<<< Updated upstream
-M.ROLE = {TANK=1, HEALER=2, MELEE=3, RANGED=4, UNKNOWN=5, SUPPORT=6}
-M.ROLE_NAME = {"tank", "healer", "melee", "ranged", "unknown", "support"}
-=======
 M.ROLE = {TANK=1, HEALER=2, MELEE=3, RANGED=4, SUPPORT=5, MELEEHEALER=6, UNKNOWN=7}
 M.ROLE_NAME = {"tank", "healer", "melee", "ranged", "support", "meleehealer", "unknown"}
->>>>>>> Stashed changes
 M.EXAMPLE_PLAYER1 = {rindex=4, name=L["character.thrall"], rank=1, group=2, class="SHAMAN", zone="Tanaan", unitID="raid4", role=M.ROLE.MELEE, isDamager=true}
 M.EXAMPLE_PLAYER2 = {rindex=18, name=L["character.liadrin"], rank=1, group=5, class="PALADIN", zone="Orgrimmar", unitID="raid18", role=M.ROLE.HEALER}
 M.EXAMPLE_PLAYER3 = {rindex=7, name=L["character.chen"], rank=1, group=5, class="MONK", zone="Tanaan", unitID="raid7", role=M.ROLE.TANK}
@@ -159,7 +150,7 @@ local function wipeRoster()
     R.groupSizes[g] = 0
   end
   for i = 1, 5 do
-    R.roleCountsTHMRSU[i] = 0
+    R.roleCountsTHMRU[i] = 0
   end
   R.builtUniqueNames = false
   R.prevRoleCountsString = R.roleCountsString
@@ -195,7 +186,7 @@ local function buildSoloRoster(rindex)
       p.isDamager = true
     end
   end
-  R.roleCountsTHMRSU[p.role] = R.roleCountsTHMRSU[p.role] + 1
+  R.roleCountsTHMRU[p.role] = R.roleCountsTHMRU[p.role] + 1
   R.roster[p.name] = p
 end
 
@@ -237,56 +228,6 @@ local function findPartyUnitID(name, nextGuess)
 end
 
 local function buildRoster()
-<<<<<<< Updated upstream
-  wipeRoster()
-  local isRaid = IsInRaid()
-  local areAnyUnknown
-  if IsInGroup() then
-    R.size = GetNumGroupMembers()
-    local p, _, unitRole
-    local firstSittingGroup = A.util:GetFirstSittingGroup()
-    local nextGuess = 1
-    for i = 1, R.size do
-      p = wipe(R.rosterArray[i])
-      p.rindex = i
-      p.name, p.rank, p.group, _, _, p.class, p.zone = GetRaidRosterInfo(i)
-      if isRaid then
-        p.unitID = "raid"..i
-      else
-        p.unitID, nextGuess = findPartyUnitID(p.name, nextGuess)
-      end
-      if not p.name then
-        p.isUnknown = true
-        areAnyUnknown = true
-        p.name = p.unitID
-      end
-      if p.group >= firstSittingGroup then
-        p.isSitting = true
-      end
-      R.groupSizes[p.group] = R.groupSizes[p.group] + 1
-
-      -- Augmentation Evoker Check
-      if p.class == "EVOKER" and select(6, GetSpecializationInfo(GetSpecialization())) == 1468 then
-        p.role = M.ROLE.SUPPORT
-      else
-        unitRole = UnitGroupRolesAssigned(p.unitID)
-        if unitRole == "TANK" then
-          p.role = M.ROLE.TANK
-        elseif unitRole == "HEALER" then
-          p.role = M.ROLE.HEALER
-        else
-          p.role = A.damagerRole:GetDamagerRole(p)
-          if p.role ~= M.ROLE.TANK and p.role ~= M.ROLE.HEALER then
-            p.isDamager = true
-          end
-        end
-      end
-
-      --if not p.isSitting then
-        --R.roleCountsTHMRSU[p.role] = R.roleCountsTHMRSU[p.role] + 1
-      --end
-      R.roster[p.name] = p
-=======
     wipeRoster()
     local isRaid = IsInRaid()
     local areAnyUnknown
@@ -317,7 +258,6 @@ local function buildRoster()
             end
             R.groupSizes[p.group] = R.groupSizes[p.group] + 1
 
-<<<<<<< Updated upstream
             -- Role Assignment Logic
             if IsMeleeHealer(p.unitID) then
                 p.role = M.ROLE.HEALER  -- Assign as healer in your existing role structure
@@ -344,7 +284,6 @@ local function buildRoster()
     else
         R.size = 1
         buildSoloRoster(1)
->>>>>>> Stashed changes
     end
 
     -- Build comp string.
@@ -359,15 +298,6 @@ local function buildRoster()
         if A.DEBUG >= 1 then A.console:Debugf(M, "cancelling scheduled ForceBuildRoster") end
         M:CancelTimer(R.rebuildTimer)
         R.rebuildTimer = false
-=======
-  -- Build comp string.
-  R.roleCountsString = tconcat(R.roleCountsTHMRSU, ":")
-
-  -- Schedule rebuild if there are any unknown players.
-  if areAnyUnknown then
-    if not R.rebuildTimer then
-      R.rebuildTimer = M:ScheduleTimer(rebuildTimerDone, DELAY_REBUILD_FOR_UNKNOWN, "unknown")
->>>>>>> Stashed changes
     end
 end
 
@@ -463,12 +393,12 @@ function M:NumSitting()
   return t
 end
 
-function M:GetRoleCountsTHMRSU()
-  return unpack(R.roleCountsTHMRSU)
+function M:GetRoleCountsTHMRU()
+  return unpack(R.roleCountsTHMRU)
 end
 
 function M:GetComp(style)
-  local t, h, m, r, u = unpack(R.roleCountsTHMRSU)
+  local t, h, m, r, u = unpack(R.roleCountsTHMRU)
   return A.util:FormatGroupComp(style, t, h, m, r, u)
 end
 
@@ -485,7 +415,7 @@ function M:GetUnknownNames()
 end
 
 function M:PrintIfThereAreUnknowns()
-  local u = R.roleCountsTHMRSU[M.ROLE.UNKNOWN]
+  local u = R.roleCountsTHMRU[M.ROLE.UNKNOWN]
   if u > 0 then
     local line = format(L["phrase.waitingOnDataFromServerFor"], M:GetUnknownNames())
     line = line.." "..(u == 1 and L["phrase.assumingRangedForNow.singular"] or L["phrase.assumingRangedForNow.plural"])
@@ -553,10 +483,6 @@ end
 
 function M:IsRanged(name)
   return name and R.roster[name] and (R.roster[name].role == M.ROLE.RANGED)
-end
-
-function M:IsSupport(name)
-  return name and R.roster[name] and (R.roster[name].role == M.ROLE.SUPPORT)
 end
 
 function M:IsDamager(name)

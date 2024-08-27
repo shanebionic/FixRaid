@@ -1,11 +1,7 @@
 ## Interface: 110002
 ## Title: FixRaid
 ## Author: denalb
-<<<<<<< Updated upstream
-## Version: 1.1.0-alpha
-=======
 ## Version: v1.1.1-alpha
->>>>>>> Stashed changes
 ## Notes: Automatically set up groups in raids.
 ## DefaultState: Enabled
 ## SavedVariables: FixRaidDB
@@ -62,10 +58,6 @@ modules\sortModes\random.lua
 modules\sortModes\split.lua
 modules\sortModes\thmr.lua
 modules\sortModes\tmrh.lua
-<<<<<<< Updated upstream
-modules\sortModes\tmrhs.lua
-=======
 modules\sortModes\tmrhms.lua
->>>>>>> Stashed changes
 
 modules\widgets\SimpleGroup.lua

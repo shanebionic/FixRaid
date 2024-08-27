@@ -226,27 +226,6 @@ R.optionsTable.args.sort.args = {
     width = "double",
     style = "dropdown",
     values = {
-<<<<<<< Updated upstream
-      [1] = format("%s > %s > %s > %s (1 aug per group)", L["word.tank.plural"], L["word.melee.plural"], L["word.ranged.plural"], L["word.healer.plural"]),
-	  [2] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.melee.plural"], L["word.ranged.plural"], L["word.healer.plural"]),
-      [3] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.healer.plural"], L["word.melee.plural"], L["word.ranged.plural"]),
-	  [4] = L["options.value.sortMode.nosort"],
-    },
-    get = function(i)
-      if A.options.sortMode == "nosort" then return 4
-      elseif A.options.sortMode == "thmr" then return 3
-	  elseif A.options.sortMode == "tmrh" then return 2
-      else return 1
-      end
-    end,
-    set = function(i,v)
-      A.sorter:Stop()
-      if v == 4 then A.options.sortMode = "nosort"
-      elseif v == 2 then A.options.sortMode = "tmrh"
-	  elseif v == 3 then A.options.sortMode = "thmr"
-      else A.options.sortMode = "tmrhs"
-      end
-=======
         [1] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.melee.plural"], L["word.ranged.plural"], L["word.healer.plural"]),
         [2] = format("%s > %s > %s > %s", L["word.tank.plural"], L["word.healer.plural"], L["word.melee.plural"], L["word.ranged.plural"]),
         [3] = format("%s > %s > %s > %s > %s > %s", L["word.tank.plural"], L["word.melee.plural"], L["word.support.plural"], L["word.meleehealer.plural"], L["word.ranged.plural"], L["word.healer.plural"]),
@@ -266,7 +245,6 @@ R.optionsTable.args.sort.args = {
         elseif v == 2 then A.options.sortMode = "thmr"
         else A.options.sortMode = "tmrh"
         end
->>>>>>> Stashed changes
     end,
   },
   damageMeterAddonDesc = {
@@ -612,7 +590,7 @@ R.optionsTable.args.ui.args = {
     name = L["options.widget.notifyNewVersion.text"],
     desc = paragraphs({
       format(L["options.widget.notifyNewVersion.desc"], HA(A.NAME)),
-      format(L["addonChannel.print.newerVersion"], A.NAME, H("1.0.5"), A.VERSION_PACKAGED),
+      format(L["addonChannel.print.newerVersion"], A.NAME, H("9000.1"), A.VERSION_PACKAGED),
     }),
     type = "toggle",
     width = "full",
@@ -736,12 +714,12 @@ R.optionsTable.args.ui.args = {
     style = "dropdown",
     values = {
       -- Indexes correspond to A.util.GROUP_COMP_STYLE.
-      [1] = A.util:FormatGroupComp(1, 2, 4, 4, 4, 2, 0, true),
-      [2] = A.util:FormatGroupComp(2, 2, 4, 4, 4, 2, 0, true),
-      [3] = A.util:FormatGroupComp(3, 2, 4, 4, 4, 2, 0, true),
-      [4] = A.util:FormatGroupComp(4, 2, 4, 4, 4, 2, 0, true),
-      [5] = A.util:FormatGroupComp(5, 2, 4, 4, 4, 2, 0, true),
-      [6] = A.util:FormatGroupComp(6, 2, 4, 4, 4, 2, 0, true),
+      [1] = A.util:FormatGroupComp(1, 2, 4, 6, 8, 0, true),
+      [2] = A.util:FormatGroupComp(2, 2, 4, 6, 8, 0, true),
+      [3] = A.util:FormatGroupComp(3, 2, 4, 6, 8, 0, true),
+      [4] = A.util:FormatGroupComp(4, 2, 4, 6, 8, 0, true),
+      [5] = A.util:FormatGroupComp(5, 2, 4, 6, 8, 0, true),
+      [6] = A.util:FormatGroupComp(6, 2, 4, 6, 8, 0, true),
     },
     get = function(i) return max(1, min(6, A.options.dataBrokerGroupCompStyle)) end,
     set = function(i,v) A.options.dataBrokerGroupCompStyle = max(1, min(6, v)) A.dataBroker:RefreshGroupComp() end,
@@ -775,15 +753,15 @@ end
 function M:UpdateSysMsgPreview(which, option)
   local comp, player, msg
   if which == 1 then
-    comp = A.util:FormatGroupComp(A.util.GROUP_COMP_STYLE.TEXT_FULL, 2, 4, 4, 4, 2, 0)
+    comp = A.util:FormatGroupComp(A.util.GROUP_COMP_STYLE.TEXT_FULL, 2, 4, 4, 6, 0)
     player = A.group.EXAMPLE_PLAYER1
     msg = format(ERR_RAID_MEMBER_ADDED_S, player.name)
   elseif which == 2 then
-    comp = A.util:FormatGroupComp(A.util.GROUP_COMP_STYLE.TEXT_FULL, 2, 3, 4, 4, 2, 0)
+    comp = A.util:FormatGroupComp(A.util.GROUP_COMP_STYLE.TEXT_FULL, 2, 3, 4, 6, 0)
     player = A.group.EXAMPLE_PLAYER2
     msg = format(ERR_RAID_MEMBER_REMOVED_S, player.name)
   elseif which == 3 then
-    comp = A.util:FormatGroupComp(A.util.GROUP_COMP_STYLE.TEXT_FULL, 2, 2, 5, 4, 2, 0)
+    comp = A.util:FormatGroupComp(A.util.GROUP_COMP_STYLE.TEXT_FULL, 2, 2, 5, 6, 0)
     player = A.group.EXAMPLE_PLAYER3
     msg = format(ROLE_CHANGED_INFORM, player.name, INLINE_TANK_ICON.." "..TANK)
   else
@@ -802,14 +780,10 @@ function M:UpdateRoleIcons()
   t["partyMarkIcon3"].name = format("%s %s 1", A.util:GetRoleIcon("DAMAGER"), L["word.damager.singular"])
   t["partyMarkIcon4"].name = format("%s %s 2", A.util:GetRoleIcon("DAMAGER"), L["word.damager.singular"])
   t["partyMarkIcon5"].name = format("%s %s 3", A.util:GetRoleIcon("DAMAGER"), L["word.damager.singular"])
-
-  -- Update the dataBrokerGroupCompStyle examples
   t = R.optionsTable.args.ui.args.dataBrokerGroupCompStyle.values
   for i = 1, #t do
-    t[i] = A.util:FormatGroupComp(i, 2, 4, 4, 4, 2, 0, true)  -- Update this line to include the support role
+    t[i] = A.util:FormatGroupComp(i, 2, 4, 6, 8, 0, true)
   end
-
-  -- Update system message previews to include the support role															   
   t = R.optionsTable.args.ui.args
   for i = 1, 3 do
     M:UpdateSysMsgPreview(i, t["sysMsgPreview"..i])

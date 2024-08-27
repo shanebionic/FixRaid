@@ -123,7 +123,7 @@ local function calculateAverages()
   local countDamage, totalDamage = 0, 0
   local countHealing, totalHealing = 0, 0
   for name, amount in pairs(R.snapshot) do
-    -- Ignore tanks and augs
+    -- Ignore tanks.
     if A.group:IsDamager(name) then
       countDamage = countDamage + 1
       totalDamage = totalDamage + amount

@@ -67,24 +67,66 @@ local function setupRaidTabButton()
   if R.raidTabButton then
     return
   end
-  local b = CreateFrame("BUTTON", nil, RaidFrame, "UIPanelButtonTemplate")
-  b:SetPoint("BOTTOMLEFT", RaidFrame, "BOTTOMLEFT", 3, 5)
-  b:SetSize(RaidFrameRaidInfoButton:GetWidth(), RaidFrameRaidInfoButton:GetHeight())
-  b:GetFontString():SetFont(RaidFrameRaidInfoButton:GetFontString():GetFont())
+
+  -- Reference the Raid Frame and title text
+  local raidFrame = RaidFrame
+  local titleText = raidFrame.TitleText or raidFrame:GetChildren()
+
+  -- Create the button
+  local b = CreateFrame("Button", nil, raidFrame, "UIPanelButtonTemplate")
+  b:SetSize(80, 22) -- Adjust width and height as needed
   b:SetText(L["button.fixRaid.text"])
+
+  -- Position the button in the title bar, to the right and slightly up
+  if titleText then
+    b:SetPoint("TOPRIGHT", titleText, "TOPRIGHT", -20, 25)
+  else
+    -- Fallback to positioning in the top-right corner
+    b:SetPoint("TOPRIGHT", raidFrame, "TOPRIGHT", -5, -5)
+  end
+
+  -- Optional: Adjust the button's strata and level to match the title bar
+  b:SetFrameStrata("HIGH")
+  b:SetFrameLevel(raidFrame:GetFrameLevel() + 1)
+
+  -- Add background texture
+  local bg = b:CreateTexture(nil, "BACKGROUND")
+  bg:SetAllPoints(true)
+  bg:SetColorTexture(0.1, 0.1, 0.1, 0.8) -- Dark background with some transparency
+
+  -- Add border
+  local border = CreateFrame("Frame", nil, b, BackdropTemplateMixin and "BackdropTemplate")
+  border:SetAllPoints(true)
+  border:SetBackdrop({
+    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+    edgeSize = 12,
+  })
+  border:SetBackdropBorderColor(1, 1, 1, 1) -- White border
+
+  -- Register scripts
   b:RegisterForClicks("AnyUp")
   b:SetScript("OnClick", handleClick)
-  b:SetScript("OnEnter", function(frame) GameTooltip:SetOwner(frame, "ANCHOR_BOTTOMRIGHT") M:SetupTooltip(GameTooltip, false) end)
-  b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  b:SetScript("OnEnter", function(frame)
+    GameTooltip:SetOwner(frame, "ANCHOR_BOTTOMRIGHT")
+    M:SetupTooltip(GameTooltip, false)
+  end)
+  b:SetScript("OnLeave", function()
+    GameTooltip:Hide()
+  end)
+
+  -- Apply skin if available
   local skin = A.utilGui:GetElvUISkinModule()
   if skin then
     skin:HandleButton(b, true)
   end
+
+  -- Show or hide based on options
   if A.options.addButtonToRaidTab then
     b:Show()
   else
     b:Hide()
   end
+
   R.raidTabButton = b
 end
 

@@ -35,7 +35,6 @@ L["choose.print.choosing.healer"]   = A.util:LocaleLowerNoun(L["word.healer.sing
 L["choose.print.choosing.damager"]  = A.util:LocaleLowerNoun(L["word.damager.singular"])
 L["choose.print.choosing.ranged"]   = A.util:LocaleLowerNoun(L["word.ranged.singular"])
 L["choose.print.choosing.melee"]    = A.util:LocaleLowerNoun(L["word.melee.singular"])
-L["choose.print.choosing.support"]    = A.util:LocaleLowerNoun(L["word.support.singular"])
 
 local format, gmatch, gsub, ipairs, pairs, select, sort, strfind, strlen, strlower, strmatch, strsplit, strsub, strtrim, time, tinsert, tonumber, tostring, unpack, wipe = format, gmatch, gsub, ipairs, pairs, select, sort, strfind, strlen, strlower, strmatch, strsplit, strsub, strtrim, time, tinsert, tonumber, tostring, unpack, wipe
 local tconcat = table.concat
@@ -552,7 +551,6 @@ local function buildDispatchTable()
       "damage",
       "dps",
       "dd"})
-  add("support", {choosePlayer, "support"})
   add("melee", {choosePlayer, "melee"})
   add("ranged", {choosePlayer, "ranged"}).alias(false, "range")
   add("conqueror", {choosePlayer, "conqueror", "tierToken"}).alias(false, "conq")
@@ -589,7 +587,7 @@ local function buildDispatchTable()
     end
   end
   -- Just in case they got missed in the locale file:
-  for _, role in ipairs({"tank", "healer", "damager", "melee", "ranged", "support"}) do
+  for _, role in ipairs({"tank", "healer", "damager", "melee", "ranged"}) do
     DISPATCH[role].alias(true, strtrim((L["word."..role..".singular"])))
   end
 
