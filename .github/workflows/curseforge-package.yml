@@ -1,0 +1,36 @@
+name: CurseForge Package
+
+on:
+  push:
+    branches:
+      - Augmentation  # Replace with the branch you want to trigger the workflow, e.g., "Augmentation"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Lua
+      uses: leafo/gh-actions-lua@v6
+      with:
+        luaVersion: "5.1"
+
+    - name: Install dependencies
+      run: |
+        luarocks install zip
+
+    - name: Package addon
+      run: |
+        zip -r FixRaid.zip FixRaid
+
+    - name: Upload to CurseForge
+      env:
+        CF_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+      run: |
+        curl -X POST -H "x-api-token: $CF_API_KEY" \
+        -F "file=@FixRaid.zip" \
+        -F "metadata={\"changelog\": \"Auto-generated from GitHub\", \"changelogType\": \"markdown\", \"displayName\": \"FixRaid v${{ github.sha }}\"}" \
+        https://wow.curseforge.com/api/projects/299620/upload-file

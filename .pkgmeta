@@ -1,0 +1,10 @@
+package-as: FixRaid
+ignore:
+  - .github
+  - .gitignore
+  - .vscode
+  - docs
+  - tests
+  - *.yml
+  - *.md
+  - .pkgmeta
