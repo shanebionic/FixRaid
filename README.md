@@ -2,6 +2,8 @@
 
 Organizing groups is an important, if sometimes tedious, part of running a raid. This addon helps automate the process.
 
+Compatible with World of Warcraft Retail (Midnight 12.0.7).
+
 Instead of manually dragging players around in the raid tab, just click a **single button** to set things up the way you want:
 
  * **Rearrange** players so that tanks, melee, ranged, and healers are grouped together. Your priest healers will thank you.
@@ -24,7 +26,7 @@ Other features:
 
 For players, you can download and install this addon from:
 
- * Curse: http://www.curse.com/addons/wow/fixraid
+ * CurseForge: https://www.curseforge.com/wow/addons/fixraid
 
 For developers, beta testers, and translators (anyone is welcome to contribute):
 

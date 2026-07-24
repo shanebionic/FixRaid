@@ -68,8 +68,16 @@ local function setupRaidTabButton()
     return
   end
 
+  -- The raid management UI is load-on-demand in Retail.
+  if not C_AddOns.IsAddOnLoaded("Blizzard_RaidUI") then
+    C_AddOns.LoadAddOn("Blizzard_RaidUI")
+  end
+
   -- Reference the Raid Frame and title text
   local raidFrame = RaidFrame
+  if not raidFrame then
+    return
+  end
   local titleText = raidFrame.TitleText or raidFrame:GetChildren()
 
   -- Create the button

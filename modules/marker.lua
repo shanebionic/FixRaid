@@ -11,7 +11,9 @@ M.private = {
 local R = M.private
 
 local min, sort, tinsert, wipe = min, sort, tinsert, wipe
-local GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, IsInInstance, IsInRaid, PromoteToAssistant, SetLootMethod, SetRaidTarget, UnitExists, UnitGroupRolesAssigned, UnitName = GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, IsInInstance, IsInRaid, PromoteToAssistant, SetLootMethod, SetRaidTarget, UnitExists, UnitGroupRolesAssigned, UnitName
+local PromoteToAssistant = C_PartyInfo.PromoteToAssistant
+local SetLootMethod = C_PartyInfo.SetLootMethod
+local GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, IsInInstance, IsInRaid, SetRaidTarget, UnitExists, UnitGroupRolesAssigned, UnitName = GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, IsInInstance, IsInRaid, SetRaidTarget, UnitExists, UnitGroupRolesAssigned, UnitName
 
 function M:FixParty()
   if IsInRaid() then

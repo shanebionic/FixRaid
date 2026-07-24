@@ -56,7 +56,9 @@ end
 
 local format, gsub, ipairs, pairs, select, time, tinsert, tostring, unpack, wipe = format, gsub, ipairs, pairs, select, time, tinsert, tostring, unpack, wipe
 local tconcat = table.concat
-local GetNumGroupMembers, GetRealZoneText, GetSpecialization, GetSpecializationInfo, GetRaidRosterInfo, IsInGroup, IsInRaid, UnitClass, UnitExists, UnitGroupRolesAssigned, UnitIsUnit, UnitName = GetNumGroupMembers, GetRealZoneText, GetSpecialization, GetSpecializationInfo, GetRaidRosterInfo, IsInGroup, IsInRaid, UnitClass, UnitExists, UnitGroupRolesAssigned, UnitIsUnit, UnitName
+local GetSpecialization = C_SpecializationInfo.GetSpecialization
+local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
+local GetNumGroupMembers, GetRealZoneText, GetRaidRosterInfo, IsInGroup, IsInRaid, UnitClass, UnitExists, UnitGroupRolesAssigned, UnitIsUnit, UnitName = GetNumGroupMembers, GetRealZoneText, GetRaidRosterInfo, IsInGroup, IsInRaid, UnitClass, UnitExists, UnitGroupRolesAssigned, UnitIsUnit, UnitName
 
 local function rebuildTimerDone(event)
   if A.DEBUG >= 1 then A.console:Debugf(M, "%s ForceBuildRoster", event) end
