@@ -25,7 +25,7 @@ M.CLASS_DAMAGER_ROLE = {
   MAGE        = "ranged",
   WARLOCK     = "ranged",
   -- HUNTER      = "ranged", -- comment out for WoW 7.0 (Legion)
-  DEMONHUNTER = "melee",
+  -- DEMONHUNTER (Devourer is ranged in Midnight)
 }
 -- We have to include tanks and healers to handle people who clear their role.
 local SPECID_ROLE = {
@@ -43,6 +43,9 @@ local SPECID_ROLE = {
   [255] = "melee",   -- Survival Hunter
   [1467] = "ranged", --Devastation Evoker
   [1473] = "ranged", --Augmentation Evoker
+  [577] = "melee",   -- Havoc Demon Hunter
+  [581] = "tank",    -- Vengeance Demon Hunter
+  [1480] = "ranged", -- Devourer Demon Hunter
 }
 -- Lazily populated.
 local BUFF_ROLE = false
@@ -51,7 +54,9 @@ local DB_CLEANUP_GUILD_MAX_AGE_DAYS = 21
 local DB_CLEANUP_NONGUILD_MAX_AGE_DAYS = 1.5
 
 local format, ipairs, max, pairs, select, time, tostring = format, ipairs, max, pairs, select, time, tostring
-local GetSpecialization, GetSpecializationInfo, GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit = GetSpecialization, GetSpecializationInfo, GetSpellInfo, InCombatLockdown, UnitBuff, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit
+local GetSpecialization = C_SpecializationInfo.GetSpecialization
+local GetSpecializationInfo = C_SpecializationInfo.GetSpecializationInfo
+local InCombatLockdown, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit = InCombatLockdown, UnitClass, UnitExists, UnitIsInMyGuild, UnitIsUnit
 
 local function cleanDbCache(cache, maxAgeDays)
   local earliest = time() - (60*60*24*maxAgeDays)
@@ -169,7 +174,8 @@ local function guessMeleeOrRangedFromBuffs(name)
      --[251837]  = A.group.ROLE.RANGED,  -- Flask of Endless Fathoms
       --[24858]   = A.group.ROLE.RANGED,  -- Moonkin Form
     }) do
-      buff = C_Spell.GetSpellInfo(buff)
+      local spellInfo = C_Spell.GetSpellInfo(buff)
+      buff = spellInfo and spellInfo.name
       if A.DEBUG >= 1 then A.console:Debugf(M, "buff=%s role=%s", tostring(buff), role) end
       if buff then
         BUFF_ROLE[buff] = role

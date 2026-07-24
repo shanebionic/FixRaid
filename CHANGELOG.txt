@@ -1,4 +1,11 @@
-﻿v1.0.2
+﻿v1.1.0
+  - Update for World of Warcraft: Midnight 12.0.7.
+  - Add ranged-role detection for Devourer Demon Hunters.
+  - Migrate specialization and party-management calls to current APIs.
+  - Load the Blizzard raid-management UI safely before adding the FixRaid button.
+  - Correct Details! meter detection when no usable segment exists.
+
+v1.0.2
   - Change Project Name to FixGroups-Reborn
   - More fixes for Damager Role Detection
 
